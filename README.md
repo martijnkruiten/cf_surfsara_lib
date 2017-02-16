@@ -40,7 +40,7 @@ For now some copy actions are required. I will make an autotools setup. there ar
 ```
 
 If pull request [864](https://github.com/cfengine/masterfiles/pull/864) is applied you do not have to
-change anything else you have to add the shorcut `templates` to `controls/cf_serverd.cf`
+change anything else you have to add the `shorcut templates` to `controls/cf_serverd.cf`
 ```
       "$(sys.workdir)/templates"
       handle => "server_access_grant_access_templates",
