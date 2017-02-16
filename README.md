@@ -25,6 +25,15 @@ If the order is `{ "b.json", "a.json" }` the value of *a* would be *1*
 For now some copy actions are required. I will make an autotools setup. there are two options
  * Include it in the Master Policy Framework (MPF)
  * Incldue it in your own framework
+ 
+ Thw `def.node_template_dir` is set in `lib/surfsara/def.cf`, but can also be set
+ set in `def.json`. The *def.json* wins, eg:
+ ```
+ vars:
+ {
+    "node_template_dir" : "/etc/node_status/templates"
+ }
+ ```
 
 ### MPF installation
 
