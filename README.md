@@ -1,7 +1,8 @@
 # SURFsara CFEngine library for mustache/json templates 
 
 At SURFsara we have developed a general library to generate files from templates. In our setup we can easily
-specify the default values and override them in other json file(s) or via def.cf/json.
+specify the default values and override them in other json file(s) or via def.cf/json. The goal is to set
+up an global  repository for mustache templates.
 
 For all senarios the mustache/json file(s) will be copied to the local node directory:
  * The json and template file(s) are copied from the policy hub: `templates/$(bundle_name)`
@@ -26,7 +27,7 @@ For now some copy actions are required. I will make an autotools setup. there ar
  * Include it in the Master Policy Framework (MPF)
  * Incldue it in your own framework
  
- Thw `def.node_template_dir` is set in `lib/surfsara/def.cf`, but can also be set
+ The  `def.node_template_dir` variable is set in `lib/surfsara/def.cf`, but can also be set
  set in `def.json`. The *def.json* wins, eg:
  ```
  vars:
