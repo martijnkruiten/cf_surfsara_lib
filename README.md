@@ -4,6 +4,8 @@ At SURFsara we have developed a general library to generate files from templates
 specify the default values and override them in other json file(s) or via def.cf/json. The goal is to set
 up an global  repository for mustache templates.
 
+_bas_ is 
+
 For all senarios the mustache/json file(s) will be copied to the local node directory:
  * The json and template file(s) are copied from the policy hub: `templates/$(bundle_name)`
  * The copies are placed in: `$(def.node_template_dir)/$(bundle_name)`
