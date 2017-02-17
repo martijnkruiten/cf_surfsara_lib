@@ -140,8 +140,8 @@ vars:
 ## cf-agent command line options
 
 The SURFsara CFEngine library also checks for some classes:
- * The copy of the json/mustache file(s) can be skipped by `-DMUSTACHE\_SKIP\_COPY`. So you can change the 
+ * The copy of the json/mustache file(s) can be skipped by `-DMUSTACHE_SKIP_COPY`. So you can change the 
    files localy for testing.
- * To debug the mustache setup: `-DDEBUG\_MUSTACHE` (all service bundles)
- * To debug mustache for a service bundle, eg *-DDEBUG_ntp*
+ * To debug the mustache setup: `-DDEBUG_MUSTACHE` (all service bundles)
+ * To debug mustache for a service bundle, eg `-DDEBUG_ntp`
 
