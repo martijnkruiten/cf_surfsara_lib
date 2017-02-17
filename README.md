@@ -86,7 +86,7 @@ See above to add `templates shortcut` to cf-serverd.
 
 ## Usage
 
-For know we provide 2 template examples and there is inline documentation:
+For now we provide 2 template examples and there is inline documentation:
  1. examples/services/autorun/ntp.cf
  1. examples/services/autorun/tcpwrappers.cf
 
