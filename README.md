@@ -131,7 +131,7 @@ vars:
     "ntp" data => parsejson( '{ "server" : [ "<your_ip_server1>" ] }' );
 ```
  * json file:
- ```
+  ```
  vars:
     "tcpwrapper_json_files" slist =>  { "allow_ssh.json", "allow_http.json" };
  ```
