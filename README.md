@@ -98,7 +98,7 @@ To enable the template on your system:
    * Activate the bundle
      * Via the meta tags:
         1. autorun
-        1. template_<bundle_name>, eg: bundle_ntp
+        1. `template_<bundle_name>`, eg: bundle\_ntp
      * usebundle:
         1. ntp_autorun()
         1. tcpwrappers_autorun()
