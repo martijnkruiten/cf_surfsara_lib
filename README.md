@@ -132,7 +132,7 @@ vars:
 ```
  * json file:
   ```
- vars:
+vars:
     "tcpwrapper_json_files" slist =>  { "allow_ssh.json", "allow_http.json" };
  ```
 
