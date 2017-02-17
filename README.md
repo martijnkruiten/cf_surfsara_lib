@@ -26,20 +26,42 @@ If the order is `{ "b.json", "a.json" }` the value of *a* would be *1*
 For now some copy actions are required. I will make an autotools setup. there are two options
  * Include it in the Master Policy Framework (MPF)
  * Incldue it in your own framework
+
+
+### def.node\_template\_dir
  
- The  `def.node_template_dir` variable is set in `lib/surfsara/def.cf`, but can also be set
- set in `def.json`. The *def.json* wins, eg:
- ```
- vars:
- {
-    "node_template_dir" : "/etc/node_status/templates"
- }
- ```
+The  `def.node_template_dir` variable is set in `lib/surfsara/def.cf`, but can also be set
+set in `def.json`. The *def.json* wins, eg:
+```
+vars:
+{
+   "node_template_dir" : "/etc/node_status/templates"
+}
+```
+
+### CF-serverd shortcut configuration
+
+If pull request [864](https://github.com/cfengine/masterfiles/pull/864) is applied you do not have to
+change anything else you have to add the `shorcut templates` to `controls/cf\_serverd.cf`
+```
+      "$(sys.workdir)/templates"
+      handle => "server_access_grant_access_templates",
+      shortcut => "templates",
+      comment => "Grant access to templates directory",
+      admit => { @(def.acl) };
+```
+
+### Template examples
+
+Copy the `examaples/templates` directory to your policy hub:
+ * `cp -a examples/templates $(sys.workdir)/templates`
 
 ### MPF installation
 
+1. Login on your policy server.
 1. Copy the contents of masterfiles into your masterfiles or equivalent repository
-1. Enable autorun, if you have not do so already, by adding this class to your ```def.json``` file.
+1. Copy the `examples/templates' directory to `$(sys.workdir)/templates`: `cp -a exammples/templates $(sys.workdir)/templates`
+1. Enable autorun, if you have not do so already, by adding this class to your ```def.json``` file
 ```
 {
    "classes" :
@@ -49,19 +71,11 @@ For now some copy actions are required. I will make an autotools setup. there ar
 }
 ```
 
-If pull request [864](https://github.com/cfengine/masterfiles/pull/864) is applied you do not have to
-change anything else you have to add the `shorcut templates` to `controls/cf_serverd.cf`
-```
-      "$(sys.workdir)/templates"
-      handle => "server_access_grant_access_templates",
-      shortcut => "templates",
-      comment => "Grant access to templates directory",
-      admit => { @(def.acl) };
-```
-
 ### Own framework
 
+1. Login on your policy server.
 1. cp -a masterfiles/lib/surfsara `<masterfiles>/lib/surfsara`
+1. cp -a exammples/templates $(sys.workdir)/templates`
 1. include `/lib/surfsara/stdlib.cf` in your inputs
 ```
 body common control
@@ -73,7 +87,6 @@ body common control
     };
 }
 ```
-
 See above to add `templates shortcut` to cf-serverd.
 
 ## Usage
@@ -82,8 +95,8 @@ See above to add `templates shortcut` to cf-serverd.
 ## cf-agent command line options
 
 The SURFsara CFEngine library also checks for some classes:
- * The copy of the json/mustache file(s) can be skipped by `-DMUSTACHE_SKIP_COPY`. So you can change the 
+ * The copy of the json/mustache file(s) can be skipped by `-DMUSTACHE\_SKIP\_COPY`. So you can change the 
    files localy for testing.
- * To debug the mustache setup: `-DDEBUG_MUSTACHE` (all service bundles)
+ * To debug the mustache setup: `-DDEBUG\_MUSTACHE` (all service bundles)
  * To debug mustache for a service bundle, eg *-DDEBUG_ntp*
 
