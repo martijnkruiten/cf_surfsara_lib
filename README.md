@@ -25,7 +25,7 @@ If the order is `{ "b.json", "a.json" }` the value of *a* would be *1*
 
 For now some copy actions are required. I will make an autotools setup. there are two options
  * Include it in the Master Policy Framework (MPF)
- * Incldue it in your own framework
+ * Include it in your own framework
 
 
 ### def.node\_template\_dir
@@ -42,7 +42,7 @@ vars:
 ### CF-serverd shortcut configuration
 
 If pull request [864](https://github.com/cfengine/masterfiles/pull/864) is applied you do not have to
-change anything else you have to add the `shorcut templates` to `controls/cf\_serverd.cf`
+change anything else you have to add the `shorcut templates` to `controls/cf_serverd.cf`
 ```
       "$(sys.workdir)/templates"
       handle => "server_access_grant_access_templates",
@@ -70,7 +70,7 @@ change anything else you have to add the `shorcut templates` to `controls/cf\_se
 
 1. Login on your policy server.
 1. cp -a masterfiles/lib/surfsara `<masterfiles>/lib/surfsara`
-1. cp -a examples/templates $(sys.workdir)/templates`
+1. cp -a examples/templates $(sys.workdir)/templates
 1. include `/lib/surfsara/stdlib.cf` in your inputs
 ```
 body common control
@@ -98,9 +98,9 @@ To enable the template on your system:
    * Activate the bundle
      * Via the meta tags:
         1. autorun
-        1. template_autorun
+        1. template_<bundle_name>, eg: bundle_ntp
      * usebundle:
-        1. ntp_autorun(()
+        1. ntp_autorun()
         1. tcpwrappers_autorun()
 
 ### def.json
