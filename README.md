@@ -51,11 +51,6 @@ change anything else you have to add the `shorcut templates` to `controls/cf\_se
       admit => { @(def.acl) };
 ```
 
-### Template examples
-
-Copy the `examaples/templates` directory to your policy hub:
- * `cp -a examples/templates $(sys.workdir)/templates`
-
 ### MPF installation
 
 1. Login on your policy server.
@@ -90,6 +85,56 @@ body common control
 See above to add `templates shortcut` to cf-serverd.
 
 ## Usage
+
+For know we provide 2 template examples and there is inline documentation:
+ 1. examples/services/autorun/ntp.cf
+ 1. examples/services/autorun/tcpwrappers.cf
+
+To enable the template on your system:
+ * MPF: copy one or both to `masterfiles/services/autorun`
+ * Own Framework:
+   * copy one or both to you masterfiles directory
+   * add the files to your `inputs` statement
+   * Activate the bundle
+     * Via the meta tags:
+        1. autorun
+        1. template_autorun
+     * usebundle:
+        1. ntp_autorun(()
+        1. tcpwrappers_autorun()
+
+### def.json
+
+In this file you can override settings for the templates. When the json data is merged. This one wins, eg:
+```
+"vars": {
+    "ntp" : {
+        "server": [ "<your_ip_server1>", "<your_ip_server2>" ]
+    }
+}
+```
+
+You can also specify a json setup file:
+```
+"vars": {
+    "tcpwrapper_json_files": [ "allow_ssh.json", "allow_http.json" ]
+}
+```
+
+### lib/surfsara/def.cf
+
+
+You can also override settings in this file, eg:
+ * One variable:
+```
+vars:
+    "ntp" data => parsejson( '{ "server" : [ "<your_ip_server1>" ] }' );
+```
+ * json file:
+ ```
+ vars:
+    "tcpwrapper_json_files" slist =>  { "allow_ssh.json", "allow_http.json" };
+ ```
 
 
 ## cf-agent command line options
