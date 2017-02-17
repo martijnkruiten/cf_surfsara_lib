@@ -1,0 +1,22 @@
+body file control {
+   inputs => { @{surfsara_inputs.files}, };
+}
+
+bundle common surfsara_inputs {
+   meta:
+      'tags' slist => { 'autorun' };
+
+   vars:
+      "files" slist => { "${sys.local_libdir}/surfsara/stdlib.cf" };
+
+}
+
+bundle agent surfsara_autorun
+{
+  meta:
+      "tags" slist => { "autorun" };
+
+  reports:
+    verbose_mode::
+      "$(this.bundle): surfsara lib loaded with node template dir: $(def.node_template_dir)";
+}

@@ -1,0 +1,96 @@
+bundle agent sara_data(bundle_name, json_files)
+{
+    vars:
+        any::
+            "template_dir"      string => "$(def.node_template_dir)/$(bundle_name)";
+
+            "$(bundle_name)"  data  => parsejson("{}");
+
+            "data_$(json_files)"   data => readdata("$(template_dir)/$(json_files)", "auto"),
+                ifvarclass => canonify("sara_data_json_file_exists_$(json_files)");
+
+            "$(bundle_name)" data => mergedata("$(bundle_name)", "data_$(json_files)"),
+                ifvarclass => canonify("sara_data_json_file_exists_$(json_files)");
+
+            "$(bundle_name)" data => mergedata("$(bundle_name)", "def.$(bundle_name)"),
+                ifvarclass => canonify("sara_data_def_json_$(bundle_name)");
+
+            "$(bundle_name)" data => data_expand($(bundle_name)),
+                comment => "Expand CFengine variables found in countainer";
+
+            "$(bundle_name)_str" string => format("%S", "$(bundle_name)"),
+                ifvarclass => and( 
+                                canonify("sara_data_json_file_exists_$(json_files)"),
+                                "DEBUG_$(bundle_name)|DEBUG|DEBUG_MUSTACHE_JSON|DEBUG_MUSTACHE"
+                              );
+
+            "data_str_$(json_files)" string => format("%S", "data_$(json_files)"),
+                ifvarclass => and( 
+                                canonify("sara_data_json_file_exists_$(json_files)"),
+                                "DEBUG_$(bundle_name)|DEBUG|DEBUG_MUSTACHE_JSON|DEBUG_MUSTACHE"
+                              );
+
+            "data_def_json_$(bundle_name)" string => format("%S", "def.$(bundle_name)"),
+                ifvarclass => and(
+                                "sara_data_def_json_$(bundle_name)",
+                                "DEBUG_$(bundle_name)|DEBUG|DEBUG_MUSTACHE_JSON|DEBUG_MUSTACHE"
+                              );
+
+    classes:
+        any::
+            "sara_data_json_file_exists_$(json_files)" expression => fileexists("$(template_dir)/$(json_files)"),
+                 comment => "Check if json file exists, then we can read it";
+            "sara_data_def_json_$(bundle_name)" expression => isvariable("def.$(bundle_name)");
+
+    reports:
+        any::
+            "$(this.bundle): template_data: 
+                $($(bundle_name)_str)"
+                comment => "Display the use template data",
+                ifvarclass => "DEBUG_$(bundle_name)|DEBUG|DEBUG_MUSTACHE_JSON|DEBUG_MUSTACHE";
+
+            "$(this.bundle): $(json_files) : 
+              $(data_str_$(json_files))"
+                comment => "Display the parsed json file data",
+                ifvarclass => "DEBUG_$(bundle_name)|DEBUG_MUSTACHE_JSON|DEBUG_MUSTACHE";
+
+            "$(this.bundle): def.json
+              $(data_def_json_$(bundle_name))"
+                comment => "Display the bundle json data defined in def.json",
+                ifvarclass => "sara_data_def_json_$(bundle_name).(DEBUG_$(bundle_name)|DEBUG_MUSTACHE_JSON|DEBUG_MUSTACHE)";
+}
+
+bundle agent sara_data_copy(bundle_name, json_files)
+{
+    vars:
+       !MUSTACHE_NEW::
+            "bundle_json_dir"   string => "$(g.cf_bundle_dir)/$(bundle_name)/json";
+        MUSTACHE_NEW::
+            "bundle_json_dir"   string => "$(g.cf_template_dir)/$(bundle_name)/json";
+
+
+    files:
+        "$(def.node_template_dir)/$(bundle_name)/."
+            comment => "Make sure the templatedir exsists for the bundle",
+            perms => mog("0700", "root", "root"),
+            create => "true";
+
+        "$(def.node_template_dir)/$(bundle_name)/$(json_files)"
+            comment     => "Let's copy the json files",
+            perms       => mog("0600", "root", "root"),
+            classes     => if_repaired("$(bundle_name)_mustache_copied"),
+            copy_from   => remote_dcp("$(bundle_json_dir)/$(json_files)", "$(sys.policy_hub)");
+
+    reports:
+        DEBUG_JSON::
+            "json_files : $(json_files)";
+            "json or template has been copied"
+                ifvarclass => "$(bundle_name)_mustache_copied";
+}
+
+bundle agent sara_data_autorun(bundle_name, json_files)
+{
+    methods:
+        "sara_data_copy"    usebundle => sara_data_copy("$(bundle_name)", "@(json_files)");
+        "sara_data"         usebundle => sara_data("$(bundle_name)", "@(json_files)");
+}

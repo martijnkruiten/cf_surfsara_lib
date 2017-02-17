@@ -1,0 +1,20 @@
+bundle common surfsara_stdlib_common
+{
+  vars:
+      "inputs" slist => {
+                          "$(this.promise_dirname)/bundles.cf",
+                          "$(this.promise_dirname)/def.cf",
+                          "$(this.promise_dirname)/files.cf",
+                          "$(this.promise_dirname)/processes.cf",
+      };
+
+
+  reports:
+    verbose_mode::
+      "$(this.bundle): adding SURFsara stdlib inputs='$(inputs)'";
+}
+
+body file control
+{
+      inputs => { @(surfsara_stdlib_common.inputs) };
+}
