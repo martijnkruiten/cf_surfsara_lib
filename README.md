@@ -70,7 +70,7 @@ change anything else you have to add the `shorcut templates` to `controls/cf\_se
 
 1. Login on your policy server.
 1. cp -a masterfiles/lib/surfsara `<masterfiles>/lib/surfsara`
-1. cp -a exammples/templates $(sys.workdir)/templates`
+1. cp -a examples/templates $(sys.workdir)/templates`
 1. include `/lib/surfsara/stdlib.cf` in your inputs
 ```
 body common control
