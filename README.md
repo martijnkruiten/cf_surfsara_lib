@@ -55,7 +55,7 @@ change anything else you have to add the `shorcut templates` to `controls/cf\_se
 
 1. Login on your policy server.
 1. Copy the contents of masterfiles into your masterfiles or equivalent repository
-1. Copy the `examples/templates` directory to `$(sys.workdir)/templates`: `cp -a exammples/templates $(sys.workdir)/templates`
+1. Copy the `examples/templates` directory to `$(sys.workdir)/templates`: `cp -a examples/templates $(sys.workdir)/templates`
 1. Enable autorun, if you have not done it, by adding this class to your ```def.json``` file
 ```
 {
