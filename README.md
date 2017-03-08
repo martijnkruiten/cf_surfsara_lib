@@ -86,14 +86,16 @@ See above to add `templates shortcut` to cf-serverd.
 
 ## Usage
 
-For now we provide 2 template examples and there is inline documentation:
+There are several template setups for different services included with inline documentation. These setups are
+used in prodduction at SURFsara.
  1. examples/services/autorun/ntp.cf
  1. examples/services/autorun/tcpwrappers.cf
+ 1. examples/services/autorun/singularity.cf
 
 To enable the template on your system:
- * MPF: copy one or both to `masterfiles/services/autorun`
+ * MPF: copy a setup to the `masterfiles/services/autorun` directory
  * Own Framework:
-   * copy one or both to you masterfiles directory
+   * copy a setup to  your masterfiles directory
    * add the files to your `inputs` statement
    * Activate the bundle
      * Via the meta tags:
