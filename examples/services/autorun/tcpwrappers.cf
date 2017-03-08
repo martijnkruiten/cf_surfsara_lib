@@ -1,8 +1,3 @@
-#########################################################
-# SVN info:
-#       $Id: tcpwrappers.cf 21684 2017-02-14 09:09:27Z bas $
-#       $URL: https://subtrac.surfsara.nl/osd/beowulf/svn/trunk/cfengine3/config/bundles/tcpwrappers.cf $
-#
 bundle common tcpwrappers()
 {
     vars:
