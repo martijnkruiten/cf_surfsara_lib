@@ -39,10 +39,9 @@ vars:
 }
 ```
 
-### CF-serverd shortcut configuration
+### CF-serverd shortcut configuration for cfengine version less then 3.10.1
 
-If pull request [864](https://github.com/cfengine/masterfiles/pull/864) is applied you do not have to
-change anything else you have to add the `shorcut templates` to `controls/cf_serverd.cf`
+For older versions you have to manually add the `shorcut templates` to `controls/cf_serverd.cf`
 ```
       "$(sys.workdir)/templates"
       handle => "server_access_grant_access_templates",
@@ -91,6 +90,7 @@ used in prodduction at SURFsara.
  1. examples/services/autorun/ntp.cf
  1. examples/services/autorun/tcpwrappers.cf
  1. examples/services/autorun/singularity.cf
+ 1. examples/services/autorun/ssh.cf
 
 To enable the template on your system:
  * MPF: copy a setup to the `masterfiles/services/autorun` directory
