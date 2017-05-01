@@ -60,37 +60,72 @@ bundle agent sara_data(bundle_name, json_files)
                 ifvarclass => "sara_data_def_json_$(bundle_name).(DEBUG_$(bundle_name)|DEBUG_MUSTACHE_JSON|DEBUG_MUSTACHE)";
 }
 
-bundle agent sara_data_copy(bundle_name, json_files)
+bundle agent sara_json_copy(bundle_name, json_files)
 {
     vars:
-       !MUSTACHE_NEW::
-            "bundle_json_dir"   string => "$(g.cf_bundle_dir)/$(bundle_name)/json";
-        MUSTACHE_NEW::
-            "bundle_json_dir"   string => "$(g.cf_template_dir)/$(bundle_name)/json";
-
+        any::
+            "bundle_json_dir"   string => "templates/$(bundle_name)/json";
+            "json_files_str" string => format("%S", json_files),
+                ifvarclass => "DEBUG_$(bundle_name)|DEBUG|DEBUG_JSON|DEBUG_MUSTACHE";
 
     files:
-        "$(def.node_template_dir)/$(bundle_name)/."
-            comment => "Make sure the templatedir exsists for the bundle",
-            perms => mog("0700", "root", "root"),
-            create => "true";
+        any::
+            "$(def.node_template_dir)/$(bundle_name)/."
+                comment => "Make sure the templatedir exsists for the bundle",
+                perms => mog("0700", "root", "root"),
+                create => "true";
 
-        "$(def.node_template_dir)/$(bundle_name)/$(json_files)"
-            comment     => "Let's copy the json files",
-            perms       => mog("0600", "root", "root"),
-            classes     => if_repaired("$(bundle_name)_mustache_copied"),
-            copy_from   => remote_dcp("$(bundle_json_dir)/$(json_files)", "$(sys.policy_hub)");
+        !(JSON_SKIP_COPY|MUSTACHE_SKIP_COPY)::
+            "$(def.node_template_dir)/$(bundle_name)/$(json_files)"
+                comment     => "Let's copy the json files",
+                perms       => mog("0600", "root", "root"),
+                classes     => if_repaired("$(bundle_name)_json_copied"),
+                copy_from   => remote_dcp("$(bundle_json_dir)/$(json_files)", "$(sys.policy_hub)");
 
     reports:
-        DEBUG_JSON::
-            "json_files : $(json_files)";
-            "json or template has been copied"
-                ifvarclass => "$(bundle_name)_mustache_copied";
+        any::
+            "$(this.bundle): json file(s) : $(json_files_str)"
+                ifvarclass => "DEBUG_$(bundle_name)|DEBUG|DEBUG_JSON|DEBUG_MUSTACHE";
+
+        MUSTACHE_SKIP_COPY|JSON_SKIP_COPY::
+            "Skip copying of JSON data files";
+}
+
+bundle agent sara_mustache_copy(bundle_name, template_files)
+{
+    vars:
+        any::
+            "bundle_template_dir"   string => "templates/$(bundle_name)";
+            "template_files_str" string => format("%S", template_files),
+                ifvarclass => "DEBUG_$(bundle_name)|DEBUG|DEBUG_MUSTACHE";
+
+    files:
+        any::
+            "$(def.node_template_dir)/$(bundle_name)/."
+                comment => "Make sure the templatedir exsists for the bundle",
+                perms => mog("0700", "root", "root"),
+                create => "true";
+
+        !MUSTACHE_SKIP_COPY::
+            "$(def.node_template_dir)/$(bundle_name)/$(template_files)"
+                comment     => "Let's copy the json files",
+                move_obstructions => "true",
+                perms       => mog("0600", "root", "root"),
+                classes     => if_repaired("$(bundle_name)_mustache_copied"),
+                copy_from   => remote_dcp("$(bundle_json_dir)/$(json_files)", "$(sys.policy_hub)");
+ 
+    reports:
+        any::
+            "$(this.bundle) template file : $(template_files_str)"
+                ifvarclass => "DEBUG_$(bundle_name)|DEBUG|DEBUG_MUSTACHE";
+
+        MUSTACHE_SKIP_COPY::
+            "MUSTACHE skipped copying of mustache template files";
 }
 
 bundle agent sara_data_autorun(bundle_name, json_files)
 {
     methods:
-        "sara_data_copy"    usebundle => sara_data_copy("$(bundle_name)", "@(json_files)");
+        "sara_data_copy"    usebundle => sara_json_copy("$(bundle_name)", "@(json_files)");
         "sara_data"         usebundle => sara_data("$(bundle_name)", "@(json_files)");
 }

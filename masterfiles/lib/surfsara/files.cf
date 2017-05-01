@@ -48,9 +48,8 @@ bundle agent sara_mustache_copy_and_merge(bundle_name)
             "json_local_generated_file_variable_set" expression => isvariable("def.$(bundle_name)_local_generated_json_files");
 
     methods:
-        "sara_mustache_copy"  usebundle => sara_mustache_copy("$(bundle_name)", "@(template_files)", "@(json_copy_files)"),
-            comment => "Sara mustache copy the input files to a local directory";
-            #classes => classes_generic("$(bundle_name)");
+        "sara_json_copy"  usebundle => sara_json_copy("$(bundle_name)", "@(json_copy_files)");
+        "sara_mustache_copy"  usebundle => sara_mustache_copy("$(bundle_name)", "@(template_files)");
 
         ## Now for each template run this method, loop over the key values of data files
         "sara_data" usebundle => sara_data("$(bundle_name)", "@(json_files)"),
@@ -63,54 +62,6 @@ bundle agent sara_mustache_copy_and_merge(bundle_name)
 
             "$(this.bundle): called for $(bundle_name)"
                 ifvarclass => "DEBUG_$(bundle_name)|DEBUG|DEBUG_MUSTACHE";
-}
-
-
-bundle agent sara_mustache_copy(bundle_name, template_files, json_files)
-{
-    vars:
-        any::
-            "bundle_json_dir"   string => "templates/$(bundle_name)/json";
-            "bundle_template_dir"   string => "templates/$(bundle_name)";
-
-            "json_files_str" string => format("%S", json_files),
-                ifvarclass => "DEBUG_$(bundle_name)|DEBUG|DEBUG_MUSTACHE";
-
-            "template_files_str" string => format("%S", template_files),
-                ifvarclass => "DEBUG_$(bundle_name)|DEBUG|DEBUG_MUSTACHE";
-
-    files:
-        any::
-            "$(def.node_template_dir)/$(bundle_name)/."
-                comment => "Make sure the templatedir exsists for the bundle",
-                perms => mog("0700", "root", "root"),
-                create => "true";
-
-        !MUSTACHE_SKIP_COPY:: 
-            "$(def.node_template_dir)/$(bundle_name)/$(json_files)"
-                comment     => "Let's copy the json files",
-                move_obstructions => "true",
-                perms       => mog("0600", "root", "root"),
-                classes     => if_repaired("$(bundle_name)_mustache_copied"),
-                copy_from   => remote_dcp("$(bundle_json_dir)/$(json_files)", "$(sys.policy_hub)");
-
-            "$(def.node_template_dir)/$(bundle_name)/$(template_files)"
-                comment     => "Let's copy the json files",
-                move_obstructions => "true",
-                perms       => mog("0600", "root", "root"),
-                classes     => if_repaired("$(bundle_name)_mustache_copied"),
-                copy_from   => remote_dcp("$(bundle_template_dir)/$(template_files)", "$(sys.policy_hub)");
-
-    reports:
-
-        any::
-            "$(this.bundle) json_file(s) : $(json_files_str)"
-                ifvarclass => "DEBUG_$(bundle_name)|DEBUG|DEBUG_MUSTACHE";
-            "$(this.bundle) template file : $(template_files_str)"
-                ifvarclass => "DEBUG_$(bundle_name)|DEBUG|DEBUG_MUSTACHE";
-
-        MUSTACHE_SKIP_COPY:: 
-            "MUSTACHE skipped copying of mustache/json template files";
 }
 
 bundle agent sara_mustache_autorun_expand(bundle_name,  template_files)
