@@ -112,7 +112,7 @@ bundle agent sara_mustache_copy(bundle_name, template_files)
                 move_obstructions => "true",
                 perms       => mog("0600", "root", "root"),
                 classes     => if_repaired("$(bundle_name)_mustache_copied"),
-                copy_from   => remote_dcp("$(bundle_json_dir)/$(json_files)", "$(sys.policy_hub)");
+                copy_from   => remote_dcp("$(bundle_template_dir)/$(template_files)", "$(sys.policy_hub)");
  
     reports:
         any::
