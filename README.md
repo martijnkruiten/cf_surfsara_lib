@@ -91,6 +91,7 @@ used in prodduction at SURFsara.
  1. examples/services/autorun/tcpwrappers.cf
  1. examples/services/autorun/singularity.cf
  1. examples/services/autorun/ssh.cf
+ 1. examples/services/autorun/tripwire.cf
 
 To enable the template on your system:
  * MPF: copy a setup to the `masterfiles/services/autorun` directory
@@ -136,6 +137,7 @@ vars:
   ```
 vars:
     "tcpwrapper_json_files" slist =>  { "allow_ssh.json", "allow_http.json" };
+    "tripwire_json_files" slist =>  { "systemd.json" };
  ```
 
 
