@@ -261,7 +261,7 @@ The following must be set in the specific ''def.json'' hostfile
 }}}
 
 Here are some examples how to use it:
- * specify ntp configuration in def.cf:
+ * specify ssh configuration in def.cf:
 {{{
 #!cf3
 vars:
