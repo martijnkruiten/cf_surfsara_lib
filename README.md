@@ -88,6 +88,7 @@ See above to add `templates shortcut` to cf-serverd.
 There are several template setups for different services included with inline documentation. These setups are
 used in prodduction at SURFsara.
  1. examples/services/autorun/ntp.cf
+ 1. examples/services/autorun/postfix.cf
  1. examples/services/autorun/tcpwrappers.cf
  1. examples/services/autorun/singularity.cf
  1. examples/services/autorun/ssh.cf
