@@ -5,3 +5,4 @@ The SURFsara CFEngine mustache/json library authors:
 
 Templates:
  postfix: Dennis Stam (SURFsara)
+ yum: Dennis Stam (SURFsara) & Bas van der Vlies (SURFsara)

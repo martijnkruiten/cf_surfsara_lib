@@ -94,6 +94,7 @@ used in prodduction at SURFsara.
  1. examples/services/autorun/singularity.cf
  1. examples/services/autorun/ssh.cf
  1. examples/services/autorun/tripwire.cf
+ 1. examples/services/autorun/yum.cf
 
 To enable the template on your system:
  * MPF: copy a setup to the `masterfiles/services/autorun` directory
