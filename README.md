@@ -91,6 +91,7 @@ used in prodduction at SURFsara.
  1. examples/services/autorun/postfix.cf
  1. examples/services/autorun/resolv.cf
  1. examples/services/autorun/tcpwrappers.cf
+ 1. examples/services/autorun/sara_user_consume_resources.cf
  1. examples/services/autorun/singularity.cf
  1. examples/services/autorun/ssh.cf
  1. examples/services/autorun/tripwire.cf
