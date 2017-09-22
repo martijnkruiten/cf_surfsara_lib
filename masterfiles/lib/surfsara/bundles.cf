@@ -1,3 +1,25 @@
+@if minimum_version(99.9)
+= SURFSARA lib bundles documentation (github) =
+
+[source:trunk/cfengine3/config/lib/sara/bundles.cf source sara lib bundles.cf]
+
+== bundle sara_data(bundle_name, json_files) ==
+
+This bundle will merge the json files into a data container which as the same name
+as the given `bundle_name`. This data container can be accessed by other bundles
+as:
+ * `sara_data.<bundle_name>.<variable_name>
+
+NOTE: cfengine variables that are definied in the json files, eg: $(def.hostname)
+are expanded.
+
+The json files are read from the following directory local on the host:
+ * `$(def.node_template_dir)/$(bundle_name)`
+
+This function is mostly used for the mustache templates and is also used
+by some mustache bundles. 
+
+@endif
 bundle agent sara_data(bundle_name, json_files)
 {
     vars:
@@ -60,11 +82,34 @@ bundle agent sara_data(bundle_name, json_files)
                 ifvarclass => "sara_data_def_json_$(bundle_name).(DEBUG_$(bundle_name)|DEBUG_MUSTACHE_JSON|DEBUG_MUSTACHE)";
 }
 
+@if minimum_version(99.9)
+== sara_data_autorun == 
+This bundle wil take care of copying the json files from the policy hub to:
+ * $(def.node_status_dir)/$(bundle_name)/json 
+
+After the copying it will merge all json files and the parsed data is available in the:
+ * cfengine: 
+ * mustache: 
+@endif
+bundle agent sara_data_autorun(bundle_name, json_files)
+{
+    methods:
+        "" usebundle => sara_json_copy("$(bundle_name)", "@(json_files)");
+        "" usebundle => sara_data("$(bundle_name)", "@(json_files)");
+}
+
+@if minimum_version(99.9)
+== bundle sara_json_copy(bundle_name, json_files) ==
+The bundle is internally and will take care of copying the json file(s) from the bundle data directory
+on the policy hub to a the local node directory. The bundle is called by:
+ * sara_json_copy
+@endif
 bundle agent sara_json_copy(bundle_name, json_files)
 {
     vars:
         any::
             "bundle_json_dir"   string => "templates/$(bundle_name)/json";
+
             "json_files_str" string => format("%S", json_files),
                 ifvarclass => "DEBUG_$(bundle_name)|DEBUG|DEBUG_JSON|DEBUG_MUSTACHE";
 
@@ -80,7 +125,7 @@ bundle agent sara_json_copy(bundle_name, json_files)
                 comment     => "Let's copy the json files",
                 perms       => mog("0600", "root", "root"),
                 classes     => if_repaired("$(bundle_name)_json_copied"),
-                copy_from   => remote_dcp("$(bundle_json_dir)/$(json_files)", "$(sys.policy_hub)");
+                copy_from   => sara_hash_no_perms_cp("$(bundle_json_dir)/$(json_files)");
 
     reports:
         any::
@@ -91,6 +136,187 @@ bundle agent sara_json_copy(bundle_name, json_files)
             "Skip copying of JSON data files";
 }
 
+@if minimum_version(99.9)
+See for explanation: [wiki:Algemeen/CFengine/SaraSetup/Howto_mustache_json.wiki Howto write mustache/json templates]
+@endif
+bundle agent sara_mustache_autorun(bundle_name)
+{
+    vars:
+        any::
+            "template_files"    slist => getindices("$(bundle_name).template_2_destination");
+
+    methods:
+        ## Now for each template run this method, loop over the key values of data files
+        "" usebundle => sara_mustache_copy_and_merge("$(bundle_name)"),
+            comment => "Sara mustache prepare files bundle";
+
+
+        "" usebundle => sara_mustache_autorun_expand("$(bundle_name)", "@(template_files)"),
+            comment => "Sara mustache expand template files bundle";
+
+    reports:
+        any::
+            "$(this.bundle) : called for $(bundle_name)"
+                ifvarclass => "(DEBUG_$(bundle_name)|DEBUG|DEBUG_MUSTACHE)";
+}
+
+@if minimum_version(99.9)
+=== bundle sara_mustache_autorun_expand(bundle_name, template_files) ===
+
+This bundle is used internally and will expand the mustache template file(s) with the json data. The
+bundle is called by:
+ * sara_mustache_autorun
+@endif
+bundle agent sara_mustache_autorun_expand(bundle_name,  template_files)
+{
+    vars:
+
+    methods:
+        "" usebundle => sara_mustache_cf_data_2_file("$(bundle_name)", 
+            "$(template_files)", 
+            "$($(bundle_name).template_2_destination[$(template_files)])", 
+            "");
+
+    reports:
+            "$(this.bundle): $(template_files) --> $($(bundle_name).template_2_destination[$(template_files)])"
+                ifvarclass => "DEBUG_$(bundle_name)|DEBUG|DEBUG_MUSTACHE";
+}
+
+@if minimum_version(99.9)
+=== bundle sara_mustache_cf_data_2_file(bundle_name, template_file, destination , data_section) ===
+With this bundle you can generate a file from a template with cfengine internal json data. There are 2 
+options:
+ 1. json data section variable passed as argument. Then the section will be merged from the
+    cfengine internal json data as toplevel. So variables in mustache file must be referenced
+    without the bundle name, eg `variable_name` instead of `vars.sara_data.$(bundle_name).<variable_name>`
+ 1. cfengine internal json data if you do not pass your own json data section variable
+
+The template is fetch from the local node direcrory:
+ * `$(def.node_template_dir)/$(bundle_name)/$(template_file)`
+
+When json data section variable is specified. You must specify which date section you want to use. The json files must be merged
+via sara_data, as we only can merge data from this bundle, eg `sara_data.<bundle_name>[$(data_section)]` This
+data will then be used as toplevel for the mustache template. You can just use the variables name withour `variable_name>`
+@endif
+bundle agent sara_mustache_cf_data_2_file(bundle_name, template_file, destination, data_section)
+{
+
+    vars:
+        any::
+            "template_dir"     string => "$(def.node_template_dir)/$(bundle_name)";
+
+            "data_section_str" string => format("%S", "sara_data.$(bundle_name)[$(data_section)]"),
+                ifvarclass => "DEBUG_$(bundle_name)|DEBUG|DEBUG_MUSTACHE";
+
+    classes:
+        #"data_section"     expression => isvariable("data_section"),
+        "data_section"     expression => regcmp("[a-zA-Z].*", "$(data_section)"),
+            comment => "data_section defined do use it",
+            scope => "bundle";
+
+
+    files:
+       data_section::
+                "$(destination)"
+                    comment         => "Mustache expand with defined data_section variable ",
+                    create          => "true",
+                    edit_template   => "$(template_dir)/$(template_file)",
+                    template_method => "mustache",
+                    #template_data   => mergedata("cfengine_data", "template_data"),
+                    #template_data   => @(template_data),
+                    template_data   => mergedata("sara_data.$(bundle_name)[$(data_section)]"),
+                    classes         => if_repaired("sara$(destination)");
+
+       !data_section::
+                "$(destination)"
+                    comment         => "Mustache expand with cfengine json data",
+                    create          => "true",
+                    edit_template   => "$(template_dir)/$(template_file)",
+                    template_method => "mustache",
+                    classes         => if_repaired("sara$(destination)");
+
+    reports:
+        any::
+            "$(bundle_name) : $(destination) has been generated"
+                ifvarclass => canonify("sara$(destination)");
+
+            "$(this.bundle): Template $(template_file) : $(destination)"
+                ifvarclass => "DEBUG_$(bundle_name)|DEBUG|DEBUG_MUSTACHE";
+
+       data_section::
+            "   data section used: $(data_section_str)"
+                ifvarclass => "DEBUG_$(bundle_name)|DEBUG|DEBUG_MUSTACHE";
+}
+
+@if minimum_version(99.9)
+=== bundle sara_mustache_copy_and_merge(bundle_name) ===
+
+It use the same setup as above. So the variables must be defined in:
+ * `$(bundle_name).template_2_destination`
+ * `def.$(bundle_name)_json_files`
+ * `def.$(bundle_name)_local_generated_json_files` (local generated json files)
+
+This bundle will copy the mustache template and `def.$(bundle_name)_json_files` data files to `$(def.node_template_dir)/$(bundle_name)` directory.
+It uses the following bundles:
+ * `bundle agent sara_json_copy`
+ * `bundle agent sara_mustache_copy`
+ * `bundle agent sara_data`
+
+After the parsing the json data is available via:
+ * mustache: `vars.sara_data.$(bundle_name).<variable_name>`
+ * cfengine: `sara_data.$(bundle_name).<variable_name>`
+@endif
+bundle agent sara_mustache_copy_and_merge(bundle_name)
+{
+    vars:
+        any::
+            "template_files" slist => getindices("$(bundle_name).template_2_destination");
+
+        json_file_variable_set.!json_local_generated_file_variable_set::
+            "json_files"  slist => { "default.json", "@(def.$(bundle_name)_json_files)" };
+            "json_copy_files"  slist => { "default.json", "@(def.$(bundle_name)_json_files)" };
+
+        json_file_variable_set.json_local_generated_file_variable_set::
+            "json_files"  slist => { "default.json", "@(def.$(bundle_name)_json_files)", "@(def.$(bundle_name)_local_generated_json_files)" };
+            "json_copy_files"  slist => { "default.json", "@(def.$(bundle_name)_json_files)" };
+
+        !json_file_variable_set.json_local_generated_file_variable_set::
+            "json_files"  slist => { "default.json", "@(def.$(bundle_name)_local_generated_json_files)" };
+            "json_copy_files"  slist => { "default.json" };
+
+        !(json_file_variable_set|json_local_generated_file_variable_set)::
+            "json_files" slist => { "default.json" };
+            "json_copy_files"  slist => { "default.json" };
+
+    classes:
+        any::
+            "json_file_variable_set" expression => isvariable("def.$(bundle_name)_json_files");
+            "json_local_generated_file_variable_set" expression => isvariable("def.$(bundle_name)_local_generated_json_files");
+
+    methods:
+        "" usebundle => sara_json_copy("$(bundle_name)", "@(json_copy_files)");
+        "" usebundle => sara_mustache_copy("$(bundle_name)", "@(template_files)");
+
+        ## Now for each template run this method, loop over the key values of data files
+        "" usebundle => sara_data("$(bundle_name)", "@(json_files)"),
+            comment => "Sara mustache merge data files bundle";
+
+    reports:
+        any::
+            "$(this.bundle) Note: only using: default.json"
+                ifvarclass => "!json_file_variable_set.(DEBUG_$(bundle_name)|DEBUG|DEBUG_MUSTACHE)";
+
+            "$(this.bundle): called for $(bundle_name)"
+                ifvarclass => "DEBUG_$(bundle_name)|DEBUG|DEBUG_MUSTACHE";
+}
+
+
+@if minimum_version(99.9)
+== bundle sara_mustache_copy(bundle_name, template_files) ==
+The bundle is internally and will take care of copying the template file(s) from the bundle data directory
+on the policy hub to a the local node directory. The bundle is called by:
+ * sara_mustache_copy_and_merge
+@endif
 bundle agent sara_mustache_copy(bundle_name, template_files)
 {
     vars:
@@ -106,26 +332,19 @@ bundle agent sara_mustache_copy(bundle_name, template_files)
                 perms => mog("0700", "root", "root"),
                 create => "true";
 
-        !MUSTACHE_SKIP_COPY::
+        !MUSTACHE_SKIP_COPY:: 
             "$(def.node_template_dir)/$(bundle_name)/$(template_files)"
                 comment     => "Let's copy the json files",
                 move_obstructions => "true",
                 perms       => mog("0600", "root", "root"),
                 classes     => if_repaired("$(bundle_name)_mustache_copied"),
-                copy_from   => remote_dcp("$(bundle_template_dir)/$(template_files)", "$(sys.policy_hub)");
- 
+                copy_from   => sara_hash_no_perms_cp("$(bundle_template_dir)/$(template_files)");
+
     reports:
         any::
             "$(this.bundle) template file : $(template_files_str)"
                 ifvarclass => "DEBUG_$(bundle_name)|DEBUG|DEBUG_MUSTACHE";
 
-        MUSTACHE_SKIP_COPY::
+        MUSTACHE_SKIP_COPY:: 
             "MUSTACHE skipped copying of mustache template files";
-}
-
-bundle agent sara_data_autorun(bundle_name, json_files)
-{
-    methods:
-        "sara_data_copy"    usebundle => sara_json_copy("$(bundle_name)", "@(json_files)");
-        "sara_data"         usebundle => sara_data("$(bundle_name)", "@(json_files)");
 }

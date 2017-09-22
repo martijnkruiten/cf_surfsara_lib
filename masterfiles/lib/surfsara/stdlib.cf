@@ -1,10 +1,15 @@
 bundle common surfsara_stdlib_common
 {
   vars:
+    !SURFSARA_SKIP_DEF_CF_INCLUDE::    
       "inputs" slist => {
                           "$(this.promise_dirname)/bundles.cf",
                           "$(this.promise_dirname)/def.cf",
-                          "$(this.promise_dirname)/files.cf",
+                          "$(this.promise_dirname)/processes.cf",
+      };
+    SURFSARA_SKIP_DEF_CF_INCLUDE::    
+      "inputs" slist => {
+                          "$(this.promise_dirname)/bundles.cf",
                           "$(this.promise_dirname)/processes.cf",
       };
 

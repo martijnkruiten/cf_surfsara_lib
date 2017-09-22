@@ -144,6 +144,10 @@ vars:
  ```
 
 
+IF you definied your own `def.cf`and do want to use the one include in this framework you can set the following class:
+ * `SURFSARA_SKIP_DEF_CF_INCLUDE` 
+
+
 ## cf-agent command line options
 
 The SURFsara CFEngine library also checks for some classes:
