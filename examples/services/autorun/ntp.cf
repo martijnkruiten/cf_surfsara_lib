@@ -40,7 +40,7 @@ bundle agent ntp_autorun()
             "check" usebundle => ntp_daemons_check();
 
     reports:
-        verbose_mode::
+        DEBUG_ntp|verbose_mode::
             "$(this.bundle): surfsara ntp template run";
 }
 
@@ -83,7 +83,7 @@ bundle agent ntp_surfsara_config()
         any::
             "" usebundle => sara_mustache_autorun("ntp");
         NTP_RESTART::
-            "any" usebundle => ntp_daemons_restart();
+            "" usebundle => ntp_daemons_restart();
         
 
 }
@@ -157,7 +157,7 @@ If you want to debug these bundle set the `DEBUG_nto` class, eg:
   
   
 === Setup ===  
-The variables that are set in default.json and can be overwritten.  
+The variables that are set in default.json and can be overwritten. SURFSARA use other defaults.
 {{{  
 #!json  
     "daemon_options": "",  
