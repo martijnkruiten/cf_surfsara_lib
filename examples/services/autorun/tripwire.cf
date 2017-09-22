@@ -60,6 +60,7 @@ bundle agent tripwire_surfsara_config()
 
 @if minimum_version(99.9)
 = TRIPWIRE =
+[source:trunk/cfengine3/config/bundles/tripwire.cf source tripwire.cf]
 
 This bundle checks the given file(s) if they have changed (md5). It will report the changes
 and update the database with the new checksum value.
@@ -86,7 +87,7 @@ The variable must be ''tripwire_json_files'' and with this setup 1 extra json fi
 
 === Debug ===
 
-If you want to deug this bundle set the `DEBUG_tripwire` class, eg:
+If you want to debug this bundle set the `DEBUG_tripwire` class, eg:
  * `-DDEBUG_tripwire,RUN` 
 
 === Setup ===
@@ -114,5 +115,13 @@ Here is an example to check also the apache binary (def.cf):
 vars:
     "tripwire_json_files" slist => { "apache.json" ];
 
+}}}
+
+Same can also be set in `def.json`
+{{{
+#!json
+    "vars": {
+        "tripwire_json_files": [ "apache.json" ],
+    },
 }}}
 @endif
