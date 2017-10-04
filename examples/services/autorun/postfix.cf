@@ -5,7 +5,7 @@ bundle common postfix() {
             "packages_remove"   slist => { "heirloom-mailx" };
             "service_name"      string => "postfix";
 
-        debian_7|debian_8::
+        debian_6|debian_7|debian_8::
             "daemon_name"       string => "/usr/lib/postfix/master";
         debian_9::
             "daemon_name"       string => "/usr/lib/postfix/sbin/master";
@@ -113,8 +113,6 @@ bundle agent postfix_surfsara_config
             "$(postfix.postmap_cmd) $(postfix.config_dir)/transport"
                 comment => "This is a hashed file, so we need to use postmap after a change";
 
-    files:
-
     methods:
         "sara_template_mustache_files" usebundle => sara_mustache_autorun("postfix");
 
@@ -174,7 +172,7 @@ if you want to debug this bundle set the `DEBUG_postfix` class, eg:
  * `-DDEBUG_postfix,RUN`
 
 === Setup ===
-The variables that are set in default.json and can be overwritten.
+The variables that are set in default.json and can be overwritten. SURFSARA use other defaults.
 {{{
 #!json
 {
