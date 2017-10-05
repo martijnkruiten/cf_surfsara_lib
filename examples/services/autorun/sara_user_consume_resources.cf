@@ -7,19 +7,13 @@ bundle agent sara_user_consume_resources_autorun()
     meta:
         "tags" slist => { "autorun", "template_sara_user_consume_resources" };
 
-    vars:
-        !sara_user_consume_resources_files_set::
-            "json_files" slist => { "default.json" };
-        sara_user_consume_resources_files_set::
-            "json_files" slist => { "default.json", "@(def.sara_user_consume_resources_json_files)" };
-
     classes:
         any::
             "sara_user_consume_resources_files_set" expression => isvariable("def.sara_user_consume_resources_json_files");
 
     methods:
         any::
-            "" usebundle => sara_data_autorun("sara_user_consume_resources", "@(json_files)");
+            "" usebundle => sara_data_autorun("sara_user_consume_resources");
             "" usebundle => sara_user_consume_resources_check();
 
     reports:

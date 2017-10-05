@@ -9,12 +9,6 @@ bundle agent tripwire_autorun()
     meta:
         "tags" slist => { "autorun", "template_tripwire" };
 
-    vars:
-        tripwire_files_set::
-            "json_files" slist => { "default.json", "@(def.tripwire_json_files)" };
-        !tripwire_files_set::
-            "json_files" slist => { "default.json" };
-
     classes:
         any::
             "tripwire_files_set" expression => isvariable("def.tripwire_json_files"),
@@ -22,15 +16,8 @@ bundle agent tripwire_autorun()
         
     methods:
         any::
-            "merge" usebundle => sara_data_autorun("tripwire", "@(json_files)");
+            "merge" usebundle => sara_data_autorun("tripwire");
             "config" usebundle => tripwire_surfsara_config();
-
-    reports:
-        !tripwire_files_set.DEBUG_tripwire::
-            "$(this.bundle): Only using default.json";
-        tripwire_files_set.DEBUG_tripwire::
-            "$(this.bundle): json_file used: $(json_files)";
-            
 }
 
 bundle agent tripwire_surfsara_config()
