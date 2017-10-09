@@ -1,9 +1,9 @@
 
 @if minimum_version(99.9)
-= Methods.cf =
-This is the "global" run services  file. Each method is proctected by a class. To activate you have to set the corresponding 
+= services.cf =
+This is the "global" run services  file. Each service is proctected by a class. To activate you have to set the corresponding 
 class, eg:
- * To run the `ssh_autorun` you must set `SSH_BUNDLE` in `def.cf/def.json`.
+ * To run the `ssh_autorun` you must set `SSH_BUNDLE` in `def.cf/def.json`. This setup can be used instead of the dynamic autorun method
 @endif
 bundle agent surfsara_services
 {
