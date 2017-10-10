@@ -224,7 +224,8 @@ The variables that are set in default.json and can be overwritten. SURFSARA use 
     "transport_maps": [
         "hash:/etc/postfix/transport"
     ],
-    "unknown_local_recipient_reject_code": 550
+    "unknown_local_recipient_reject_code": 550,
+    "virtual_mailbox_limit": 0
 }
 }}}
 
