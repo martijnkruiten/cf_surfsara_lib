@@ -47,5 +47,6 @@
     "transport_maps": [
         "hash:/etc/postfix/transport"
     ],
-    "unknown_local_recipient_reject_code": 550
+    "unknown_local_recipient_reject_code": 550,
+    "virtual_mailbox_limit": 0
 }

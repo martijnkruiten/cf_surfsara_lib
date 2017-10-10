@@ -21,6 +21,7 @@ inet_protocols = {{{vars.sara_data.postfix.inet_protocols}}}
 mailman_destination_recipient_limit = 1
 {{/vars.sara_data.postfix.mailman_destination_recipient_limit}}
 
+virtual_mailbox_limit = {{{vars.sara_data.postfix.virtual_mailbox_limit}}}
 message_size_limit = {{{vars.sara_data.postfix.message_size_limit}}}
 
 mydestination = {{#vars.sara_data.postfix.mydestination}}{{{.}}},{{/vars.sara_data.postfix.mydestination}}
