@@ -9,6 +9,8 @@ bundle agent surfsara_services
 {
 
     methods:
+        DHCLIENT_BUNDLE::
+            "" usebundle => dhclient_autorun();
         NTP_BUNDLE::
             "" usebundle => ntp_autorun();
 
