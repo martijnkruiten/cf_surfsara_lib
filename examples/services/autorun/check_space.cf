@@ -1,16 +1,3 @@
-#########################################################
-#
-# Author:   Ramon Bastiaans
-#           ramon.bastiaans@sara.nl
-# Descr:    Check if enough free space available
-# Usage:    check_space( "/dir", "space[T/G/M/k/%]" )
-#           space can be percentage or absolute amount
-#
-# SVN info:
-#       $Id: check_space.cf 24280 2017-10-18 08:45:49Z bas $
-#       $URL: https://subtrac.surfsara.nl/osd/beowulf/svn/trunk/cfengine3/config/services/check_space.cf $
-#
-
 bundle agent check_space_autorun()
 {
     methods:
