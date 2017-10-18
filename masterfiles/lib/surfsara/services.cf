@@ -9,8 +9,10 @@ bundle agent surfsara_services
 {
 
     methods:
-        DHCLIENT_BUNDLE::
-            "" usebundle => dhclient_autorun();
+        CHECK_SPACE_BUNDLE::
+            "" usebundle => check_space_autorun(),
+                classes => results("namespace", "check_space");
+
         NTP_BUNDLE::
             "" usebundle => ntp_autorun();
 
