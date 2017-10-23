@@ -24,6 +24,7 @@ bundle agent dhclient_autorun()
 
     methods:
         any::
+            "" usebundle => sara_data_autorun("dhclient");
             "" usebundle => dhclient_surfsara_config();
         
 }
@@ -43,7 +44,17 @@ For now this bundle generate only the 'dhclient-enter-hooks' file:
  * centos: /etc/dhcp/dhclient-enter-hooks
 
 You can control what will be in in the hooks file by setting classes:
- *  DHCLIENT_RESOLV_CONF: will override the genreation of the resolv.comf file with your own code.
+ *  def.cf/def.json, override json file. This will set `DHCLIENT_RESOLV_CONF` for `any`.
+{{{
+#!json
+"dhclient": {
+    "classes": {
+        "RESOLV_CONF": "any"
+    }
+}
+}}}
+
+ * by setting `DHCLIENT_RESOLV_CONF` class.
 
 == Usage ==
 
@@ -90,8 +101,14 @@ The following must be set in host specific host file: `def.json`
 #!json
     "classes": {
         "DHCLIENT_BUNDLE": "any", 
-        "DHCLIENT_RESOLV_CONF": "any",
     },
+    "vars": {
+        "dhclient": {
+            "classes": {
+                "RESOLV_CONF": "any"
+            }
+        }
+    }
 }}}
 
 In def.cf/def.json you can override the `resolv_conf` function, eg def.json:

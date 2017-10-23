@@ -17,8 +17,7 @@ The json files are read from the following directory local on the host:
  * `$(def.node_template_dir)/$(bundle_name)`
 
 This function is mostly used for the mustache templates and is also used
-by some mustache bundles. 
-
+by some cfengine bundles. 
 @endif
 bundle agent sara_data(bundle_name, json_files)
 {
@@ -90,11 +89,50 @@ This bundle wil take care of copying the json files from the policy hub to:
 After the copying it will merge all json files and the parsed data is available in the:
  * cfengine: 
  * mustache: 
+
+After merging it will determine if we have to set cfengine classes based on the json variable
+`classes` defined in bundle json data:
+ * ` "" usebundle => sara_json_classes_2_cfengine("$(bundle_name)");` 
 @endif
 bundle agent sara_data_autorun(bundle_name)
 {
     methods:
         "" usebundle => sara_json_copy_and_merge("$(bundle_name)");
+        "" usebundle => sara_json_classes_2_cfengine("$(bundle_name)");
+}
+
+@if minimum_version(99.9)
+== bundle sara_json_classes_2_cfengine( bundle_name)  == 
+This bundle is internally and will set cfengine classes based on the json 'classes' 
+variable  defined in the bundle json data, eg:
+{{{
+#!json
+"dhclient": {
+    "classes": { 
+        "RESOLV_CONF": "any"
+    },
+}
+}}}
+
+This will set the class: `DHCLIENT_RESOLV_CONF` for class expression `any`.
+
+all classes wil be prefix by the `bundle_name` in uppercase.
+@endif
+bundle agent sara_json_classes_2_cfengine(bundle_name)
+{
+    vars:
+        "class_prefix" string => string_upcase($(bundle_name));
+        "class_name" slist => getindices("sara_data.$(bundle_name)[classes]");
+
+    classes:
+        "$(class_prefix)_$(class_name)" expression => "$(sara_data.$(bundle_name)[classes][$(class_name)])",
+            comment => "Set classes bassed on cfengine class expression",
+            scope => "namespace";
+
+    reports:
+        any::
+            "$(this.bundle): Class set: $(class_prefix)_$(class_name) : $(sara_data.$(bundle_name)[classes][$(class_name)])"
+                 ifvarclass => "(DEBUG_$(bundle_name)|DEBUG|DEBUG_MUSTACHE).$(class_prefix)_$(class_name)";
 }
 
 @if minimum_version(99.9)
@@ -143,11 +181,11 @@ bundle agent sara_mustache_autorun(bundle_name)
 
     methods:
         ## Now for each template run this method, loop over the key values of data files
-        "" usebundle => sara_json_copy_and_merge("$(bundle_name)"),
-            comment => "Sara mustache prepare files bundle";
+        "" usebundle => sara_data_autorun("$(bundle_name)"),
+            comment => "Sara prepare date files bundle";
 
         "" usebundle => sara_mustache_copy("$(bundle_name)"),
-            comment => "Sara mustache prepare files bundle";
+            comment => "Sara prepare mustache files bundle";
 
 
         "" usebundle => sara_mustache_expand("$(bundle_name)"),
@@ -349,4 +387,11 @@ bundle agent sara_mustache_copy(bundle_name)
 
         MUSTACHE_SKIP_COPY:: 
             "MUSTACHE skipped copying of mustache template files";
+}
+
+bundle agent sara_template_autorun(bundle_name)
+{
+    methods:
+        "" usebundle => sara_data_autorun("$(bundle_name)");
+        "" usebundle => sara_mustache_autorun("$(bundle_name)");
 }

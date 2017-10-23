@@ -114,7 +114,7 @@ bundle agent postfix_surfsara_config
                 comment => "This is a hashed file, so we need to use postmap after a change";
 
     methods:
-        "sara_template_mustache_files" usebundle => sara_mustache_autorun("postfix");
+        "" usebundle => sara_template_autorun("postfix");
 
     reports:
 }

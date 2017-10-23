@@ -27,14 +27,15 @@ bundle agent resolv_autorun()
         "tags" slist => { "autorun", "template_resolv" };
 
     methods:
-        "config" usebundle => resolv_surfsara_config();
+        any::
+            "" usebundle => resolv_surfsara_config();
 }
 
 bundle agent resolv_surfsara_config()
 {
     methods:
         any::
-            "mustache" usebundle => sara_mustache_autorun("resolv");
+            "" usebundle => sara_template_autorun("resolv");
 
     files:
         any::

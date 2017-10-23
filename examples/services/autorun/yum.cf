@@ -76,7 +76,7 @@ bundle agent yum_install
 bundle agent yum_surfsara_config
 {
     methods:
-        "sara_template_mustache_files" usebundle => sara_mustache_autorun("yum");
+        "" usebundle => sara_template_autorun("yum");
 }
 
 bundle agent yum_repository()

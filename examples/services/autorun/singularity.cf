@@ -55,7 +55,7 @@ bundle agent singularity_config()
 
     methods:
         any::
-            "sara_template_mustache_files" usebundle => sara_mustache_autorun("singularity");
+            "" usebundle => sara_template_autorun("singularity");
             
     reports:
         any::

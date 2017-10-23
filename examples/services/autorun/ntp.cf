@@ -35,9 +35,9 @@ bundle agent ntp_autorun()
 
     methods:
         any::
-            "install" usebundle => ntp_install();
-            "config" usebundle => ntp_surfsara_config();
-            "check" usebundle => ntp_daemons_check();
+            "" usebundle => ntp_install();
+            "" usebundle => ntp_surfsara_config();
+            "" usebundle => ntp_daemons_check();
 
     reports:
         DEBUG_ntp|verbose_mode::
@@ -81,7 +81,7 @@ bundle agent ntp_surfsara_config()
 
     methods:
         any::
-            "" usebundle => sara_mustache_autorun("ntp");
+            "" usebundle => sara_template_autorun("ntp");
         NTP_RESTART::
             "" usebundle => ntp_daemons_restart();
         

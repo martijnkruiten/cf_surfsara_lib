@@ -79,7 +79,7 @@ bundle agent tcpwrappers_surfsara_config()
             perms => mog("$(tcpwrappers.mode)", "$(tcpwrappers.owner)", "$(tcpwrappers.group)");
 
     methods:
-            "sara_template_mustache_files" usebundle => sara_mustache_autorun("tcpwrappers");
+            "" usebundle => sara_template_autorun("tcpwrappers");
 }
 
 @if minimum_version(99.9)
