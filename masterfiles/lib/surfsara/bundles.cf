@@ -125,6 +125,9 @@ bundle agent sara_json_classes_2_cfengine(bundle_name)
         "class_name" slist => getindices("sara_data.$(bundle_name)[classes]");
 
     classes:
+        #"$(class_prefix)_$(sara_data.$(bundle_name)[classes])" expression => "any",
+        #    scope => "namespace";
+
         "$(class_prefix)_$(class_name)" expression => "$(sara_data.$(bundle_name)[classes][$(class_name)])",
             comment => "Set classes bassed on cfengine class expression",
             scope => "namespace";
@@ -133,6 +136,9 @@ bundle agent sara_json_classes_2_cfengine(bundle_name)
         any::
             "$(this.bundle): Class set: $(class_prefix)_$(class_name) : $(sara_data.$(bundle_name)[classes][$(class_name)])"
                  ifvarclass => "(DEBUG_$(bundle_name)|DEBUG|DEBUG_MUSTACHE).$(class_prefix)_$(class_name)";
+
+            #"Class is set: $(class_prefix)_$(sara_data.$(bundle_name)[classes])"
+                 #ifvarclass => "DEBUG_$(bundle_name)|DEBUG|DEBUG_MUSTACHE";
 }
 
 @if minimum_version(99.9)
@@ -211,10 +217,10 @@ bundle agent sara_mustache_expand(bundle_name)
             "template_files"    slist => getindices("$(bundle_name).template_2_destination");
 
     methods:
-        "" usebundle => sara_mustache_cf_data_2_file("$(bundle_name)", 
-            "$(template_files)", 
-            "$($(bundle_name).template_2_destination[$(template_files)])", 
-            "");
+        "" usebundle => sara_mustache_cf_data_2_file("$(bundle_name)",
+                "$(template_files)",
+                "$($(bundle_name).template_2_destination[$(template_files)])",
+                "");
 
     reports:
             "$(this.bundle): $(template_files) --> $($(bundle_name).template_2_destination[$(template_files)])"
@@ -253,9 +259,11 @@ bundle agent sara_mustache_cf_data_2_file(bundle_name, template_file, destinatio
             comment => "data_section defined do use it",
             scope => "bundle";
 
+        "destination_set" expression => regcmp("^/.*", "$(destination)");
+
 
     files:
-       data_section::
+       data_section.destination_set::
                 "$(destination)"
                     comment         => "Mustache expand with defined data_section variable ",
                     create          => "true",
@@ -266,7 +274,7 @@ bundle agent sara_mustache_cf_data_2_file(bundle_name, template_file, destinatio
                     template_data   => mergedata("sara_data.$(bundle_name)[$(data_section)]"),
                     classes         => if_repaired("sara$(destination)");
 
-       !data_section::
+       !data_section.destination_set::
                 "$(destination)"
                     comment         => "Mustache expand with cfengine json data",
                     create          => "true",
@@ -279,7 +287,12 @@ bundle agent sara_mustache_cf_data_2_file(bundle_name, template_file, destinatio
             "$(bundle_name) : $(destination) has been generated"
                 ifvarclass => canonify("sara$(destination)");
 
+       destination_set::
             "$(this.bundle): Template $(template_file) : $(destination)"
+                ifvarclass => "DEBUG_$(bundle_name)|DEBUG|DEBUG_MUSTACHE";
+
+       !destination_set::
+            "$(this.bundle): Skipping generation for template: $(template_file)"
                 ifvarclass => "DEBUG_$(bundle_name)|DEBUG|DEBUG_MUSTACHE";
 
        data_section::
