@@ -168,7 +168,7 @@ bundle agent sara_json_copy(bundle_name, json_files)
                 comment     => "Let's copy the json files",
                 perms       => mog("0600", "root", "root"),
                 classes     => if_repaired("$(bundle_name)_json_copied"),
-                copy_from   => sara_hash_no_perms_cp("$(bundle_json_dir)/$(json_files)");
+                copy_from   => remote_dcp("$(bundle_json_dir)/$(json_files)", "$(sys.policy_hub)");
 
     reports:
         any::
@@ -391,7 +391,7 @@ bundle agent sara_mustache_copy(bundle_name)
                 move_obstructions => "true",
                 perms       => mog("0600", "root", "root"),
                 classes     => if_repaired("$(bundle_name)_mustache_copied"),
-                copy_from   => sara_hash_no_perms_cp("$(bundle_template_dir)/$(template_files)");
+                copy_from   => remote_dcp("$(bundle_template_dir)/$(template_files)", "$(sys.policy_hub)");
 
     reports:
         any::

@@ -1,5 +1,5 @@
 XXXXX-XXXX
-  * Skip mustache expnad if not a valid destination
+  * Skip mustache expand if not a valid destination
   * Can now set classe in the bundle json data, ala def.json, egL
 {{{
         "dhclient": {
@@ -9,6 +9,7 @@ XXXXX-XXXX
         },
 }}}
 Will set the class `DHCLIENT_RESOLV_CONF` on host `r24n2`
+ * Use standard cfengine `remote_dcp` bundle instead of `sara_hash_no_perms_cp`
 
 
 18-Oct-2017
