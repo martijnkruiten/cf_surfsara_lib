@@ -7,6 +7,10 @@ alias_database = {{#vars.sara_data.postfix.alias_database}}{{{.}}},{{/vars.sara_
 
 alias_maps = {{#vars.sara_data.postfix.alias_maps}}{{{.}}},{{/vars.sara_data.postfix.alias_maps}}
 
+{{#classes.POSTFIX_VIRTUAL_MAPS}}
+{{#vars.sara_data.postfix.virtual_alias_maps}}virtual_alias_maps = {{{protocol}}}{{{delimiter}}}{{{dest}}}, {{/vars.sara_data.postfix.virtual_alias_map}}
+{{/classes.POSTFIX_VIRTUAL_MAPS}}
+
 append_dot_mydomain = {{{vars.sara_data.postfix.append_dot_mydomain}}}
 biff = {{{vars.sara_data.postfix.biff}}}
 debugger_command = {{{vars.sara_data.postfix.debugger_command}}}
@@ -22,6 +26,7 @@ mailman_destination_recipient_limit = 1
 {{/vars.sara_data.postfix.mailman_destination_recipient_limit}}
 
 virtual_mailbox_limit = {{{vars.sara_data.postfix.virtual_mailbox_limit}}}
+
 message_size_limit = {{{vars.sara_data.postfix.message_size_limit}}}
 
 mydestination = {{#vars.sara_data.postfix.mydestination}}{{{.}}},{{/vars.sara_data.postfix.mydestination}}

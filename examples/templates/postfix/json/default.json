@@ -6,6 +6,13 @@
     "alias_maps": [
         "hash:/etc/aliases"
     ],
+    "virtual_alias_maps": [
+        {
+            "protocol" : "",
+            "delimiter" : "",
+            "dest" : ""
+        }
+    ],
     "append_dot_mydomain": "no",
     "biff": "no",
     "debugger_command": "",
@@ -41,7 +48,7 @@
     "relay_domains": [
         "$mydestination"
     ],
-    "relayhost": "[mta.surfsara.nl]",
+    "relayhost": "[mta.yourdomain.nl]",
     "smtpd_banner": "SURFsara ESMTP host",
     "smtpd_port": "smtp",
     "transport_maps": [
