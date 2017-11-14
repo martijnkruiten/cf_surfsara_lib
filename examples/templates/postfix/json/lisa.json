@@ -1,0 +1,24 @@
+{
+    "classes" : {
+        "VIRTUAL_MAPS" : "<hosts_to_enable_class>"
+    },
+    "virtual_alias_maps": {
+        "ldap_aliases_map.mustache" : {
+            "delimiter": ":",
+            "dest": "/etc/postfix/virtual_alias_maps.cf",
+            "protocol": "ldap",
+            "data": {
+                "bind" : true,
+                "bind_options" : { 
+                    "dn" : "<your_base_dn>)",
+                    "pw" : "<your_password>"
+                }, 
+                "port": "<your_port>",
+                "query_filter" : "<your_filter>",
+                "result_attribute" : "mail",
+                "search_base" : "<your_search_base>",
+                "server": "<your_server>"
+            }
+        }
+    }
+}
