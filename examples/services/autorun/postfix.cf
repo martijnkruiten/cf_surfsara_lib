@@ -119,10 +119,6 @@ bundle agent postfix_surfsara_config
         sara_etc_postfix_transport::
             "$(postfix.postmap_cmd) $(postfix.config_dir)/transport"
                 comment => "This is a hashed file, so we need to use postmap after a change";
-
-    reports:
-        #POSTFIX_VIRTUAL_MAPS::
-        #    "Test the cass";
 }
 
 bundle agent postfix_virtual_alias_maps()
