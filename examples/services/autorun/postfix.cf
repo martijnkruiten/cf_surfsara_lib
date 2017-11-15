@@ -141,10 +141,6 @@ bundle agent postfix_virtual_alias_maps()
             template_data => "@(sara_data.postfix[virtual_alias_maps][$(templates)][data])",
             classes => results("namespace", "POSTFIX_$(sara_data.postfix[virtual_alias_maps][$(templates)][dest])");
 
-    commands:
-        POSTFIX_RELOAD::
-            "$(postfix.postfix_reload)";
-
     reports:
         "$(this.bundle) Template $(templates) : $(sara_data.postfix[virtual_alias_maps][$(templates)][dest])"
              ifvarclass => "DEBUG|DEBUG_postfix|DEBUG_$(this.bundle)";

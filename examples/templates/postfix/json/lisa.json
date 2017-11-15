@@ -10,14 +10,14 @@
             "data": {
                 "bind" : true,
                 "bind_options" : { 
-                    "dn" : "<your_base_dn>)",
+                    "dn" : "cn=name,dc=you,dc=me,dc=her",
                     "pw" : "<your_password>"
                 }, 
-                "port": "<your_port>",
-                "query_filter" : "<your_filter>",
+                "port": "636",
+                "query_filter" : "(uid=%s)",
                 "result_attribute" : "mail",
-                "search_base" : "<your_search_base>",
-                "server": "<your_server>"
+                "search_base" : "ou=Users,dc=you,dc=me,dc=her",
+                "server": "ldaps://yourserver.nl"
             }
         }
     }
