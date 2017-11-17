@@ -140,8 +140,6 @@ bundle agent postfix_virtual_alias_maps()
     reports:
         "$(this.bundle) Template $(templates) : $(sara_data.postfix[virtual_alias_maps][$(templates)][dest])"
              ifvarclass => "DEBUG|DEBUG_postfix|DEBUG_$(this.bundle)";
-        #"Test the class"
-        #    ifvarclass => and(canonify("POSTFIX_$(dest_$(i))_repaired"));
 }
 
 @if minimum_version(99.9)
