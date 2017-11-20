@@ -10,7 +10,15 @@ XXXXX-XXXX
 }}}
 Will set the class `DHCLIENT_RESOLV_CONF` on host `r24n2`
  * Use standard cfengine `remote_dcp` bundle instead of `sara_hash_no_perms_cp`
-
+ * added a new json attribute for ssh bundle. `copy_files`
+{{{
+"ssh": {
+    "copy_files": {
+        "ssh_host_dsa_key": { "source": "cf_bundles_dir/ssh/doornode", "mode": "0600", "owner": "root", "group": "root", "restart": "yes" },
+        "ssh_host_dsa_key.pub": { "source": "cf_bundles_dir/ssh/doornode", "mode": "0644", "owner": "root", "group": "root", "restart": "yes" }
+    }
+},
+}}}
 
 18-Oct-2017
   * Added dhclient.cf service,  for now only disable resolv.conf generation.

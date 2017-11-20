@@ -1,10 +1,4 @@
-#################################################
-#
-# SVN info:
-#       $Id: ssh.cf 22645 2017-04-28 11:57:25Z bas $
-#       $URL: https://subtrac.surfsara.nl/osd/beowulf/svn/trunk/cfengine3/config/bundles/ssh.cf $
-#
-bundle common ssh(params)
+bundle common ssh()
 {
     vars: 
         any::
@@ -49,9 +43,10 @@ bundle agent ssh_autorun()
 
     methods:
         any::
-            "install" usebundle => ssh_install();
-            "config" usebundle => ssh_surfsara_config();
-            "check" usebundle => ssh_daemons_check();
+            "" usebundle => sara_data_autorun("ssh");
+            "" usebundle => ssh_install();
+            "" usebundle => ssh_surfsara_config();
+            "" usebundle => ssh_daemons_check();
 }
 
 bundle agent ssh_daemons_restart()
@@ -84,7 +79,6 @@ bundle agent ssh_daemons_check()
 
 }
 
-
 bundle agent ssh_install()
 {
     vars:
@@ -106,26 +100,90 @@ bundle agent ssh_install()
 
 bundle agent ssh_surfsara_config()
 {
-    vars:
-        any::
-            "ssh_config_files" slist => getvalues("ssh.template_2_destination");
-            "ssh_server_file_class" string => canonify("sara$(ssh.server_file)");
+vars:
+    any::
+        "ssh_config_files" slist => getvalues("ssh.template_2_destination");
 
-    classes:
-        any::
-            "SSHD_RESTART" or => { "$(ssh_server_file_class)", };
+classes:
+    any::
+        "ssh_copy_files_set" expression => isvariable("sara_data.ssh[copy_files]"),
+            comment => "Must we copy extra files for ssh bundle";
 
-    methods:
-        any::
-            "sara_template_mustache_files" usebundle => sara_mustache_autorun("ssh");
-        SSHD_RESTART::
-            "any" usebundle => ssh_daemons_restart();
+methods:
+    any::
+        "" usebundle => sara_mustache_autorun("ssh");
+        "" usebundle => ssh_daemons_restart(),
+            ifvarclass => or( 
+                canonify("sara$(ssh.server_file)")
+                );
 
-    files:
-        any::
-           "$(ssh_config_files)"
-                comment         => "Make sure that the config files are 0644 and owner root",
-                perms           => mog("0644", "root", "root"); 
+    ssh_copy_files_set::
+        "" usebundle => ssh_copy_files();
+
+files:
+    any::
+        "/etc/ssh/.*_key"
+            comment         => "Make sure that all key files are 0600 and owner root",
+            perms           => mog("0600", "root", "root");
+
+       "$(ssh_config_files)"
+            comment         => "Make sure that the config files are 0644 and owner root",
+            perms           => mog("0644", "root", "root");
+
+    centos::
+        "/usr/bin/rsh"
+            comment         => "This is only needed for CentOS for software that still depend on rsh command",
+            perms           => mog("0777", "root", "root"),
+            link_from       => ln_s("/usr/bin/ssh"),
+            move_obstructions => "true";
+}
+
+bundle agent ssh_copy_files()
+{
+vars:
+    any::
+        "files" slist => getindices("sara_data.ssh[copy_files]");
+
+        "files_str" string => format("%S", "sara_data.ssh[copy_files]"),
+            ifvarclass => "DEBUG|DEBUG_ssh|DEBUG_$(this.bundle)";
+
+classes:
+    any::
+        "ssh_restart_$(files)_class" expression => strcmp("$(sara_data.ssh[copy_files][$(files)][restart])", "yes"),
+            comment => "Must ssh daemon be restart if this files get copied";
+
+files:
+    any::
+        "/etc/ssh/$(files)"
+            comment => "Copy ssh files and set class if its get copied",
+            copy_from => secure_cp("$(sara_data.ssh[copy_files][$(files)][source])/$(files)", "$(sys.policy_hub)"),
+            classes => results("namespace", "ssh_copy_files_$(files)");
+
+        "/etc/ssh/$(files)"
+            comment => "Check permission",
+            perms => mog( "$(sara_data.ssh[copy_files][$(files)][mode])", "$(sara_data.ssh[copy_files][$(files)][owner])",
+                "$(sara_data.ssh[copy_files][$(files)][group])");
+
+methods:
+    any::
+        "" usebundle => ssh_daemons_restart(),
+            comment => "Restart ssh daemon if 'restart': 'yes' is set and file hash been copied",
+            ifvarclass => and(
+                canonify("ssh_copy_files_$(files)_repaired"),
+                canonify("ssh_restart_$(files)_class")
+                );
+
+reports:
+    any::
+        "$(files) has been copied, so restart ssh daemon"
+            ifvarclass => and(
+                canonify("ssh_copy_files_$(files)_repaired"),
+                canonify("ssh_restart_$(files)_class"),
+                "DEBUG|DEBUG_ssh|DEBUG_$(this.bundle)"
+                );
+
+        "$(this.bundle): $(files_str)"
+            ifvarclass => "DEBUG|DEBUG_ssh|DEBUG_$(this.bundle)";
 }
 
 @if minimum_version(99.9)
@@ -168,10 +226,10 @@ The variable must be ''ssh_json_files'' and with this setup 1 extra json file wi
 === DEBUG ===
 
 if you want to debug this bundle set the `DEBUG_ssh` class, eg:
- * `DDEBUG_ssh,RUN` 
+ * `DDEBUG_ssh` 
 
-=== Setup ===
-The variables that are set in default.json and can be overwritten.
+== Setup ==
+The variables are set in default.json and can be overwritten.
 {{{
 #!json
 {
@@ -184,6 +242,7 @@ The variables that are set in default.json and can be overwritten.
     "Banner_system": "SURFsara",  
     "Banner_system_url": "http://www.surfsara.nl",  
     "ChallengeResponseAuthentication": "no",  
+    "copy_files": {},
     "HostbasedAuthentication": "yes",  
     "HostKey": [  
         { "key" : "/etc/ssh/ssh_host_rsa_key" },  
@@ -250,7 +309,33 @@ The variables that are set in default.json and can be overwritten.
 }
 }}}
 
-=== Def usage  ===
+=== copy_files ===
+
+When this variable is set it will coyy the specified file to the `ssh.config_dir`. copy_files has the
+following format:
+{{{
+#!json
+"filename": {
+    "source": "The full path of the file on the policy server",
+    "mode":  "The mode bits",
+    "owner": "File owner",
+    "group": "File group",
+    "restart": "Must we restart the ssh daemon (yes|no)"
+}
+}}}
+
+example:
+{{{
+#!json
+"copy_files": {
+    "shosts.equiv": { "source": "cf_bundles_dir/ssh/lisa", "mode": "0644", "owner": "root", "group": "root", "restart": "no" },
+    "ssh_known_hosts2": { "source": "cf_bundles_dir/ssh/lisa", "mode": "0644", "owner": "root", "group": "root", "restart": "yes" }
+}
+}}}
+
+where `cf_bundles_dir` is a ''cf-serverd shortcut''.
+
+== Def usage  ==
 
 The following must be set in the specific ''def.json'' hostfile
 {{{
