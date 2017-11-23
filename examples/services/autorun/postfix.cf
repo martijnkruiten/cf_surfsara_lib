@@ -1,7 +1,7 @@
 bundle common postfix() {
     vars:
         debian::
-            "packages_add"      slist => { "postfix", "bsd-mailx" };
+            "packages_add"      slist => { "postfix", "bsd-mailx", "postfix-ldap" };
             "packages_remove"   slist => { "heirloom-mailx" };
             "service_name"      string => "postfix";
 
@@ -48,9 +48,13 @@ bundle agent postfix_autorun()
 
     methods:
         any::
-            "postfix_install"               usebundle => postfix_install();
-            "postfix_surfsara_config"       usebundle => postfix_surfsara_config();
-            "postfix_daemons_check"         usebundle => postfix_daemons_check();
+            ""  usebundle => sara_data_autorun("postfix");
+            ""  usebundle => postfix_install();
+            ""  usebundle => postfix_surfsara_config();
+            ""  usebundle => postfix_daemons_check();
+
+        POSTFIX_VIRTUAL_MAPS::        
+            "" usebundle => postfix_virtual_alias_maps();
 
 }
 
@@ -102,6 +106,9 @@ bundle agent postfix_surfsara_config
             "sara_etc_postfix_recipient_canonical",
         };
 
+    methods:
+        "" usebundle => sara_mustache_autorun("postfix");
+
     commands:
         POSTFIX_NEWALIAS::
             "$(postfix.newaliases)";
@@ -112,11 +119,27 @@ bundle agent postfix_surfsara_config
         sara_etc_postfix_transport::
             "$(postfix.postmap_cmd) $(postfix.config_dir)/transport"
                 comment => "This is a hashed file, so we need to use postmap after a change";
+}
+
+bundle agent postfix_virtual_alias_maps()
+{
+    vars:
+        "templates" slist => getindices("sara_data.postfix[virtual_alias_maps]");
 
     methods:
-        "" usebundle => sara_template_autorun("postfix");
+        "" usebundle => sara_mustache_copy("postfix", "@(postfix_virtual_alias_maps.templates)");
+        
+    files:
+        "$(sara_data.postfix[virtual_alias_maps][$(templates)][dest])"
+            create => "true",
+            edit_template => "$(def.node_template_dir)/postfix/$(templates)",
+            template_method => "mustache",
+            template_data => "@(sara_data.postfix[virtual_alias_maps][$(templates)][data])",
+            classes => results("namespace", "POSTFIX_$(sara_data.postfix[virtual_alias_maps][$(templates)][dest])");
 
     reports:
+        "$(this.bundle) Template $(templates) : $(sara_data.postfix[virtual_alias_maps][$(templates)][dest])"
+             ifvarclass => "DEBUG|DEBUG_postfix|DEBUG_$(this.bundle)";
 }
 
 @if minimum_version(99.9)
@@ -133,7 +156,11 @@ files will be generated from mustache templates:
  * /etc/postfix/header_checks
  * /etc/postfix/transport
 
-If one of the files is changed then the followong ''class'' will be set:
+Created by the bundle postfix_virtual_alias_map()
+
+ * /etc/postfix/virtual_alias_maps.cf
+
+If one of the files is changed then the following ''class'' will be set:
  * _etc_aliases
  * _etc_postfix_main_cf
  * _etc_postfix_master_cf
@@ -225,6 +252,13 @@ The variables that are set in default.json and can be overwritten. SURFSARA use 
         "hash:/etc/postfix/transport"
     ],
     "unknown_local_recipient_reject_code": 550,
+    "virtual_alias_maps": [
+        {
+            "protocol" : "",
+            "delimiter" : "",
+            "dest" : ""
+        }
+    ],
     "virtual_mailbox_limit": 0
 }
 }}}
@@ -261,5 +295,57 @@ vars:
     "postfix" data => parsejson( '{ "alias_root_email_address":  "file_aliases_lines"  }' );
 }}} 
 
-@endif
+ * to use `virtual_alias_map`s override following and define your own mustache file 
+{{{
+#!json
+    "virtual_alias_maps": [
+        {
+            "protocol" : "",
+            "delimiter" : "",
+            "dest" : ""
+        }
+    ],
+}}}
 
+ * enable VIRTUAL_MAPS class and describe your json file, for example:
+  * VIRTUAL_MAPS will enable virtual_alias_maps in main.cf of postfix
+{{{
+{{#classes.POSTFIX_VIRTUAL_MAPS}}
+{{#vars.sara_data.postfix.virtual_alias_maps}}virtual_alias_maps = {{{protocol}}}{{{delimiter}}}{{{dest}}}, {{/vars.sara_data.postfix.virtual_alias_map}}
+{{/classes.POSTFIX_VIRTUAL_MAPS}}
+}}}
+
+ * Json data file. Postfix bundle will copy the `ldap_aliases_map.mustache` template file and expand it with teh defined data.
+{{{
+#!json
+    "classes" : {
+        "VIRTUAL_MAPS": [ "mta.example.com" ],:
+    },
+    "virtual_alias_maps": {
+        "ldap_aliases_map.mustache" : {
+            "delimiter": ":",
+            "dest": "/etc/postfix/virtual_alias_maps.cf",
+            "protocol": "ldap",
+            "data": {
+                "bind" : true,
+                "bind_options" : {
+                    "dn" : "<your_dn>",
+                    "pw" : "<your_bind_password>"
+                },
+                "port": "636",
+                "query_filter" : "(uid=%s)",
+                "result_attribute" : "mail",
+                "search_base" : "ou=Users,dc=example,dc=com",
+                "server": "ldaps://ldap.example.com"
+            }
+        }
+    }
+}}}
+
+{{{
+#!cf3
+vars:
+    "postfix" data => parsejson( '{ "alias_root_email_address":  "file_aliases_lines"  }' );
+}}} 
+
+@endif
