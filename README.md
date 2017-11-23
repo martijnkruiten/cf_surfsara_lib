@@ -154,8 +154,9 @@ IF you definied your own `def.cf`and do want to use the one include in this fram
 ## cf-agent command line options
 
 The SURFsara CFEngine library also checks for some classes:
- * The copy of the json/mustache file(s) can be skipped by `-DMUSTACHE_SKIP_COPY`. So you can change the 
-   files localy for testing.
+ * To test local mustache/json changes, the copy of the json/mustache file(s) from the policy server can be skipped by:
+  * `-DMUSTACHE_SKIP_COPY`:  Skip copying of the mustache files
+  * `-DJSON_SKIP_COPY`: Skip copying of the json files
  * To debug the mustache setup: `-DDEBUG_MUSTACHE` (all service bundles)
  * To debug mustache for a service bundle, eg `-DDEBUG_ntp`
 
