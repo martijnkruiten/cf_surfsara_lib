@@ -1,24 +1,50 @@
 XXXXX-XXXX
   * Skip mustache expand if not a valid destination
   * Can now set classe in the bundle json data, ala def.json, egL
-{{{
+```
         "dhclient": {
             "classes": { 
                 "RESOLV_CONF": "r24n2"
             }
         },
-}}}
+```
 Will set the class `DHCLIENT_RESOLV_CONF` on host `r24n2`
  * Use standard cfengine `remote_dcp` bundle instead of `sara_hash_no_perms_cp`
  * added a new json attribute for ssh bundle. `copy_files`
-{{{
+```
 "ssh": {
     "copy_files": {
         "ssh_host_dsa_key": { "source": "cf_bundles_dir/ssh/doornode", "mode": "0600", "owner": "root", "group": "root", "restart": "yes" },
         "ssh_host_dsa_key.pub": { "source": "cf_bundles_dir/ssh/doornode", "mode": "0644", "owner": "root", "group": "root", "restart": "yes" }
     }
 },
-}}}
+```
+ * Added functionallity to enable `virtual_alias_maps` entry in postfi main.cf. The following example will copy the mustache template
+file from `templates/postfix/ldap_aliases_map.mustache` and expand it with the specified inline json data:
+```
+"classes" : {
+    "VIRTUAL_MAPS": [ "mta.example.com" ],:
+},
+"virtual_alias_maps": {
+    "ldap_aliases_map.mustache" : {
+        "delimiter": ":",
+        "dest": "/etc/postfix/virtual_alias_maps.cf",
+        "protocol": "ldap",
+        "data": {
+            "bind" : true,
+            "bind_options" : {
+                "dn" : "<your_dn>",
+                "pw" : "<your_bind_password>"
+            },
+            "port": "636",
+            "query_filter" : "(uid=%s)",
+            "result_attribute" : "mail",
+            "search_base" : "ou=Users,dc=example,dc=com",
+            "server": "ldaps://ldap.example.com"
+        }
+    }
+}
+```
 
 18-Oct-2017
   * Added dhclient.cf service,  for now only disable resolv.conf generation.
