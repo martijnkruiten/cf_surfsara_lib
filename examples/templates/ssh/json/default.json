@@ -8,6 +8,9 @@
     "Banner_system": "SURFsara",
     "Banner_system_url": "http://www.surfsara.nl",
     "ChallengeResponseAuthentication": "no",
+    "classes": {
+        "SSH_USE_DEPRICATED_OPTIONS": [ "debian_7", "centos" ]
+    },
     "HostbasedAuthentication": "yes",
     "HostKey": [
         { "key" : "/etc/ssh/ssh_host_rsa_key" },
@@ -59,6 +62,7 @@
     "RhostsRSAAuthentication": "yes",
     "RSAAuthentication": "yes",
     "ServerKeyBits": "768",
+    "setup_dir": "",
     "StrictModes": "yes",
     "Subsystem": [
         { "service" : "sftp" , "path" : "$(ssh.sftp_server_path)" }
@@ -70,5 +74,6 @@
     "UsePAM": "yes" ,
     "UsePrivilegeSeparation": "yes" ,
     "X11DisplayOffset": "10" ,
-    "X11Forwarding": "yes"
+    "X11Forwarding": "yes",
+    "X11UseLocalhost": "yes"
 }

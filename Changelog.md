@@ -10,7 +10,9 @@ XXXXX-XXXX
 ```
 Will set the class `DHCLIENT_RESOLV_CONF` on host `r24n2`
  * Use standard cfengine `remote_dcp` bundle instead of `sara_hash_no_perms_cp`
- * added a new json attribute for ssh bundle. `copy_files`
+
+ * ssh changes:
+    * added a new json attribute for ssh bundle. `copy_files`
 ```
 "ssh": {
     "copy_files": {
@@ -19,7 +21,8 @@ Will set the class `DHCLIENT_RESOLV_CONF` on host `r24n2`
     }
 },
 ```
- * Some ssh options are deprecated.  If you want to include this options in `sshd_config` you must set the class `SSH_USE_DEPRICATED_OPTIONS`, eg:
+    * Some ssh options are deprecated.  If you want to include this options in `sshd_config` you must set the class `SSH_USE_DEPRICATED_OPTIONS",
+      it is default enabled for debian_7 and centos. 
 ```
 vars:
     "ssh" data => parsejson( '{ "classes": { "USE_DEPRICATED_OPTIONS" : "any" }  }' );
@@ -28,6 +31,12 @@ or
 
 classes:
     "SSH_USE_DEPRICATED_OPTIONS" expression => "any";
+```
+
+    * ssh options added: 
+```
+    "X11Forwarding": "yes",
+    "X11UseLocalhost": "yes
 ```
 
  * Added functionallity to enable `virtual_alias_maps` entry in postfi main.cf. The following example will copy the mustache template
