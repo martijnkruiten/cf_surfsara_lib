@@ -122,7 +122,7 @@ methods:
 
 files:
     any::
-        "/etc/ssh/.*_key"
+        "$(ssh.config_dir)/.*_key"
             comment         => "Make sure that all key files are 0600 and owner root",
             perms           => mog("0600", "root", "root");
 
@@ -154,12 +154,12 @@ classes:
 
 files:
     any::
-        "/etc/ssh/$(files)"
+        "$(ssh.config_dir)/$(files)"
             comment => "Copy ssh files and set class if its get copied",
             copy_from => secure_cp("$(sara_data.ssh[copy_files][$(files)][source])/$(files)", "$(sys.policy_hub)"),
             classes => results("namespace", "ssh_copy_files_$(files)");
 
-        "/etc/ssh/$(files)"
+        "$(ssh.config_dir)/$(files)"
             comment => "Check permission",
             perms => mog( "$(sara_data.ssh[copy_files][$(files)][mode])", "$(sara_data.ssh[copy_files][$(files)][owner])",
                 "$(sara_data.ssh[copy_files][$(files)][group])");
@@ -197,7 +197,7 @@ This bundle will generate these files from mustache templates:
  * /etc//ssh/sshd_banner
  * /etc//ssh/sshd.conf
 
-If one of the files is changed then the followong ''class'' will be set:
+If one of the files is changed then the following ''class'' will be set:
  * sara_etc_ssh_ssh_conf
  * sara_etc_ssh_sshd_banner
  * sara_etc_ssh_sshd_conf

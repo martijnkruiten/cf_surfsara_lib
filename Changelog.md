@@ -1,6 +1,6 @@
 XXXXX-XXXX
   * Skip mustache expand if not a valid destination
-  * Can now set classe in the bundle json data, ala def.json, egL
+  * Can now set classes in the bundle json data, ala def.json, eg
 ```
         "dhclient": {
             "classes": { 
@@ -19,6 +19,17 @@ Will set the class `DHCLIENT_RESOLV_CONF` on host `r24n2`
     }
 },
 ```
+ * Some ssh options are deprecated.  If you want to include this options in `sshd_config` you must set the class `SSH_USE_DEPRICATED_OPTIONS`, eg:
+```
+vars:
+    "ssh" data => parsejson( '{ "classes": { "USE_DEPRICATED_OPTIONS" : "any" }  }' );
+
+or
+
+classes:
+    "SSH_USE_DEPRICATED_OPTIONS" expression => "any";
+```
+
  * Added functionallity to enable `virtual_alias_maps` entry in postfi main.cf. The following example will copy the mustache template
 file from `templates/postfix/ldap_aliases_map.mustache` and expand it with the specified inline json data:
 ```
@@ -44,7 +55,6 @@ file from `templates/postfix/ldap_aliases_map.mustache` and expand it with the s
         }
     }
 }
-```
 
 18-Oct-2017
   * Added dhclient.cf service,  for now only disable resolv.conf generation.
