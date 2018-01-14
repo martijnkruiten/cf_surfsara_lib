@@ -53,7 +53,9 @@ For older versions you have to manually add the `shorcut templates` to `controls
 ### MPF installation
 
 1. Login on your policy server.
-1. Copy the contents of masterfiles into your masterfiles or equivalent repository
+1. Copy the contents of `masterfiles` into your masterfiles or equivalent repository
+   * `cp -a masterfiles/lib/surfsara /var/cfengine/masterfiles/lib`
+   * `cp masterfiles/services/autorun/surfsara.cf /var/cfengine/services/autorun`
 1. Copy the `examples/templates` directory to `$(sys.workdir)/templates`: `cp -a examples/templates $(sys.workdir)/templates`
 1. Enable autorun, if you have not done it, by adding this class to your ```def.json``` file
 ```
