@@ -82,12 +82,9 @@ bundle agent ssh_daemons_check()
 bundle agent ssh_install()
 {
     vars:
-        debian.!debian_8::
-            "packages"  slist => { "openssh-client", "openssh-server", "openssh-blacklist" };
+        debian::
+            "packages"  slist => { "openssh-client", "openssh-server" };
 
-        debian_8::
-            "packages"  slist => { "openssh-client", "openssh-server", "openssh-blacklist", "libpam-systemd", "dbus" };
-        
         centos::
             "packages"  slist => { "openssh", "openssh-clients", "openssh-server", "openssh-askpass", "openssh-ldap" };
         
