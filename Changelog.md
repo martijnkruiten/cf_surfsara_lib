@@ -13,7 +13,7 @@
 Will set the class `DHCLIENT_RESOLV_CONF` on host `r24n2`
 
 ## ssh changes 
-    * added a new json attribute for ssh bundle. `copy_files`
+   * added a new json attribute for ssh bundle. `copy_files`
 ```
  "ssh": {
     "copy_files": {
@@ -34,7 +34,7 @@ classes:
     "SSH_USE_DEPRICATED_OPTIONS" expression => "any";
 ```
 
-   * ssh options added: 
+   * default ssh options added: 
 ```
     "X11Forwarding": "yes",
     "X11UseLocalhost": "yes
