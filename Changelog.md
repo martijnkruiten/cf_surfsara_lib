@@ -1,29 +1,29 @@
-XXXXX-XXXX
+#  XXXXX-XXXX
   * Added installation script for MPF: `mpf_installation`
   * Skip mustache expand if not a valid destination
-  * Can now set classes in the bundle json data, ala def.json, eg
+  * Use standard cfengine `remote_dcp` bundle instead of `sara_hash_no_perms_cp`
+  * Can now set classes based on a cfengine expression in the bundle json data, ala def.json, eg
 ```
-        "dhclient": {
-            "classes": { 
-                "RESOLV_CONF": "r24n2"
-            }
-        },
+"dhclient": {
+  "classes": { 
+     "RESOLV_CONF": "r24n2"
+  }
+},
 ```
 Will set the class `DHCLIENT_RESOLV_CONF` on host `r24n2`
- * Use standard cfengine `remote_dcp` bundle instead of `sara_hash_no_perms_cp`
 
- * ssh changes:
+## ssh changes 
     * added a new json attribute for ssh bundle. `copy_files`
 ```
-"ssh": {
+ "ssh": {
     "copy_files": {
         "ssh_host_dsa_key": { "source": "cf_bundles_dir/ssh/doornode", "mode": "0600", "owner": "root", "group": "root", "restart": "yes" },
         "ssh_host_dsa_key.pub": { "source": "cf_bundles_dir/ssh/doornode", "mode": "0644", "owner": "root", "group": "root", "restart": "yes" }
     }
 },
 ```
-    * Some ssh options are deprecated.  If you want to include this options in `sshd_config` you must set the class `SSH_USE_DEPRICATED_OPTIONS",
-      it is default enabled for debian_7 and centos. 
+
+   * Some ssh options are deprecated.  If you want to include this options in `sshd_config` you must set the class `SSH_USE_DEPRICATED_OPTIONS`, it is default enabled for debian_7 and centos. 
 ```
 vars:
     "ssh" data => parsejson( '{ "classes": { "USE_DEPRICATED_OPTIONS" : "any" }  }' );
@@ -34,14 +34,14 @@ classes:
     "SSH_USE_DEPRICATED_OPTIONS" expression => "any";
 ```
 
-    * ssh options added: 
+   * ssh options added: 
 ```
     "X11Forwarding": "yes",
     "X11UseLocalhost": "yes
 ```
+## postfix changes
 
- * Added functionallity to enable `virtual_alias_maps` entry in postfi main.cf. The following example will copy the mustache template
-file from `templates/postfix/ldap_aliases_map.mustache` and expand it with the specified inline json data:
+ * Added functionallity to enable `virtual_alias_maps` entry in postfi main.cf. The following example will copy the mustache template file from `templates/postfix/ldap_aliases_map.mustache` and expand it with the specified inline json data:
 ```
 "classes" : {
     "VIRTUAL_MAPS": [ "mta.example.com" ],:
@@ -65,8 +65,9 @@ file from `templates/postfix/ldap_aliases_map.mustache` and expand it with the s
         }
     }
 }
+```
 
-18-Oct-2017
+ # 18-Oct-2017
   * Added dhclient.cf service,  for now only disable resolv.conf generation.
   * Added check\_space.cf service, monitor filesystem and you can execute an command or bundle if promise has failed
   * postfix template can now handle: virtual\_mailbox\_limit  option (Lucas Slim, SURFsara)
