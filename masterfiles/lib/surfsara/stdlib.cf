@@ -7,6 +7,8 @@ bundle common surfsara_stdlib_common
                 "$(this.promise_dirname)/processes.cf",
             };
 
+            "version" string => "SURFSARA Library 1.0.0"; 
+
         SURFSARA_SKIP_DEF_CF_INCLUDE::
             "def" slist => { };
         !SURFSARA_SKIP_DEF_CF_INCLUDE::
@@ -14,7 +16,7 @@ bundle common surfsara_stdlib_common
 
   reports:
     verbose_mode::
-      "$(this.bundle): adding SURFsara stdlib inputs='$(standard)'";
+      "$(this.bundle): adding $(version) inputs='$(standard)'";
 }
 
 body file control

@@ -1,0 +1,50 @@
+#!/bin/sh
+
+CFENGINE_MASTERFILES_DIR=/var/cfengine/masterfiles
+
+SURFSARA_LIB="masterfiles/lib/surfsara"
+SURFSARA_AUTORUN_SERVICE="masterfiles/services/autorun/surfsara.cf"
+
+
+### Functions 
+print_usage()
+{
+    echo "$(basename $0) [-d <masterfiles_path]"
+}
+
+while getopts "hd:" opt
+do
+    case $opt in
+      d)
+        CFENGINE_MASTERFILES_DIR="$OPTARG"
+        ;;
+      h)
+        print_usage
+        exit 0
+        ;;
+      \?)
+        echo "-----------------------------------------------------"
+        echo "            Received an invalid option"
+        echo "-----------------------------------------------------"
+        print_usage
+        exit 1
+        ;;
+    esac
+done
+
+if [ ! -d $CFENGINE_MASTERFILES_DIR ]
+then
+    echo "CFengine masterfiles Directory: $CFENGINE_MASTERFILES_DIR does NOT exists"
+    exit 1
+fi
+
+if [ -d $CFENGINE_MASTERFILES_DIR/lib/surfsara ]
+then
+    echo "Updating surfsara library and autorun service"
+    cp  $SURFSARA_LIB/* $CFENGINE_MASTERFILES_DIR/lib/surfsara
+else
+    echo "Installing surfsara library and autorun service"
+    cp -a $SURFSARA_LIB $CFENGINE_MASTERFILES_DIR/lib/
+fi
+
+cp $SURFSARA_AUTORUN_SERVICE $CFENGINE_MASTERFILES_DIR/services/autorun
