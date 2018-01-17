@@ -1,4 +1,5 @@
 XXXXX-XXXX
+  * Added installation script for MPF: `mpf_installation`
   * Skip mustache expand if not a valid destination
   * Can now set classes in the bundle json data, ala def.json, eg
 ```
