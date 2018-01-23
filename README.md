@@ -13,6 +13,7 @@ For all bundles the mustache/json file(s) will be copied to the local node direc
     * `$(def.node_template_dir)/$(bundle_name)`
     * The generated file(s) are specified in def.cf/json: `$(bundle_name)_local_generated_json_files`
  * You can override values via *def.json*, Note: This one always wins.
+ * CFengine variables are expanded. 
 
 Both senarios will be described in the subsection below. For both senarios you can specifiy multiple 
 json files. The files will be merged and the last one wins if the same variable name is used,eg:  
@@ -20,6 +21,14 @@ json files. The files will be merged and the last one wins if the same variable 
  * b.json defines: `a : 2`
 
 If the order is `{ "b.json", "a.json" }` the value of *a* would be *1*
+
+The merge strategy is::
+  1. `default.json`
+  1. `def.<bundle_name>_json_files` if defined
+  1. `def.<bundle_name>_local_generated_json_files` if defined
+  1. `def.<bundle_name>` if defined in def.json or:
+    * lib/surfsara/def.cf MPF setup
+    * your own file with variable scope `def` 
 
 ## Installation 
 
