@@ -4,9 +4,9 @@ At SURFsara we have developed a general library to generate files from templates
 specify the default values and override them in other json file(s) or via def.cf/json. The goal is to set
 up an global  repository for mustache templates.
 
-For all senarios the mustache/json file(s) will be copied to the local node directory:
- * The json and template file(s) are copied from the policy hub: `templates/$(bundle_name)`
- * The copies are placed in: `$(def.node_template_dir)/$(bundle_name)`
+For all bundles the mustache/json file(s) will be copied to the local node directory (`$(def.node_template_dir)`:
+ * The json and template file(s) are copied from the policy hub shortcut: `templates/$(bundle_name)`
+ * The copies are placed in the local node directory: `$(def.node_template_dir)/$(bundle_name)`
  * The following json must always be present and will always be copied: *default.json*
  * Extra json file(s) can be specified in *def.cf/json*: `$(bundle_name)_json_files` 
  * Scripts can generate json file(s) on a host/node. The json file must be copied into: 
@@ -39,6 +39,8 @@ vars:
 }
 ```
 
+default value is: `/var/cfengine/surfsara_templates`
+
 ### CF-serverd shortcut configuration for cfengine version less then 3.10.1
 
 For older versions you have to manually add the `shorcut templates` to `controls/cf_serverd.cf`
@@ -53,10 +55,7 @@ For older versions you have to manually add the `shorcut templates` to `controls
 ### MPF installation
 
 1. Login on your policy server.
-1. Copy the contents of `masterfiles` into your masterfiles or equivalent repository
-   * `cp -a masterfiles/lib/surfsara /var/cfengine/masterfiles/lib`
-   * `cp masterfiles/services/autorun/surfsara.cf /var/cfengine/services/autorun`
-1. Copy the `examples/templates` directory to `$(sys.workdir)/templates`: `cp -a examples/templates $(sys.workdir)/templates`
+1. `./mpf_installation` 
 1. Enable autorun, if you have not done it, by adding this class to your ```def.json``` file
 ```
 {
@@ -66,6 +65,9 @@ For older versions you have to manually add the `shorcut templates` to `controls
    }
 }
 ```
+
+You can test your installation with
+ * `cf-agent -Kv | grep surfsara_autorun`
 
 ### Own framework
 
