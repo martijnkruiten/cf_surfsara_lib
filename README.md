@@ -34,7 +34,7 @@ The merge strategy is::
 
 ## Installation 
 
-For now some copy actions are required. I will make an autotools setup. there are two options
+there are two options
  * Include it in the Master Policy Framework (MPF)
  * Include it in your own framework
 
@@ -79,6 +79,13 @@ For older versions you have to manually add the `shorcut templates` to `controls
 
 You can test your installation with
  * `cf-agent -Kv | grep surfsara_autorun`
+ 
+#### update ####
+
+You can run the same script it will detect that its an update `npf_installation`. This script will overwrite:
+ * surfsara library files: `lib/surfsara`
+ * surfsara services files: `services/surfsara`
+ * mustache template files and default.json files.
 
 ### Own framework
 
@@ -102,7 +109,7 @@ See above to add `templates shortcut` to cf-serverd.
 
 There are several template setups for different services included with inline documentation. These setups are
 used in prodduction at SURFsara.
- 1. examples/services/autorun/check_space.cf
+ 1. /services/check_space.cf
  1. examples/services/autorun/dhclient.cf
  1. examples/services/autorun/ntp.cf
  1. examples/services/autorun/postfix.cf
