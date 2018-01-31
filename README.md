@@ -83,9 +83,9 @@ You can test your installation with
 #### update ####
 
 You can run the same script it will detect that its an update `npf_installation`. This script will overwrite:
- * surfsara library files: `lib/surfsara`
- * surfsara services files: `services/surfsara`
- * mustache template files and default.json files.
+ * surfsara library files: `masterfiles/lib/surfsara`
+ * surfsara services files: `masterfiles/services/surfsara`
+ * mustache template files and default.json files: `/var/cfengine/templates`
 
 ### Own framework
 
