@@ -83,7 +83,7 @@ do
             fi
             cp $d/json/default.json $CFENGINE_TEMPLATES_DIR/$d/json
         else
-            echo "Installing  mustache template(s) and json file(s)"
+            echo "Installing  mustache template(s) and json file(s): $d"
             cp -PR $d $CFENGINE_TEMPLATES_DIR
         fi
 done
