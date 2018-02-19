@@ -104,6 +104,11 @@ bundle agent postfix_surfsara_config
             "sara_etc_postfix_recipient_canonical",
         };
 
+    files:
+        "/etc/postfix/main.cf"
+            perms => mog("0644", "root", "root"),
+                comment => "Must be readable for all users";
+
     methods:
         "" usebundle => sara_mustache_autorun("postfix");
 
