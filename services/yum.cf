@@ -59,24 +59,22 @@ bundle agent yum_autorun()
         "tags"  slist => {"autorun", "template_yum"};
 
     methods:
-        "yum_install"           usebundle => yum_install();
-        "yum_surfsara_config"   usebundle => yum_surfsara_config();
-        "yum_repository"        usebundle => yum_repository();
+        "" usebundle => sara_data_autorun("yum");
+        "" usebundle => yum_install();
+        "" usebundle => yum_surfsara_config();
+        "" usebundle => yum_repository();
 }
 
 bundle agent yum_install
 {
-    packages:
-        "$(yum.packages)"
-            policy => "present",
-            version => "latest",
-            comment => "We need to install some usefull packages";
+    methods:
+        "" usebundle => sara_install_service_packages("yum", "@(yum.packages)"); 
 }
 
 bundle agent yum_surfsara_config
 {
     methods:
-        "" usebundle => sara_template_autorun("yum");
+        "" usebundle => sara_mustache_autorun("yum");
 }
 
 bundle agent yum_repository()

@@ -102,6 +102,41 @@ bundle agent sara_data_autorun(bundle_name)
 }
 
 @if minimum_version(99.9)
+This bundle install the service packages. The service bundle defines the default
+package(s).  It can be overriden with json data, eg:
+{{{
+#!json
+"vars": {
+    "ssh": {
+        "packages": [ "define_your_own_ssh_packages" ]
+    },
+}
+}}}
+@endif
+bundle agent sara_install_service_packages(bundle_name, default_packages)
+{
+    vars:
+        "$(bundle_name)_packages" string => format("%S", "sara_data.$(bundle_name)[packages]"),
+            ifvarclass => and(
+                "DEBUG_$(bundle_name)|DEBUG|DEBUG_MUSTACHE_JSON|DEBUG_MUSTACHE",
+                "sara_$(bundle_name)_packages_specified"
+                );
+
+        "$(bundle_name)_packages" string => format("%S", "default_packages"),
+            ifvarclass => and(
+                "DEBUG_$(bundle_name)|DEBUG|DEBUG_MUSTACHE_JSON|DEBUG_MUSTACHE",
+                "!sara_$(bundle_name)_packages_specified"
+            );
+
+    classes:
+        "sara_$(bundle_name)_packages_specified" expression => reglist("@(sara_data.$(bundle_name)[packages])", ".*");
+
+    reports:
+        "$(this.bundle) packages: $($(bundle_name)_packages)"
+            ifvarclass => "DEBUG_$(bundle_name)|DEBUG|DEBUG_MUSTACHE_JSON|DEBUG_MUSTACHE";
+}
+
+@if minimum_version(99.9)
 == bundle sara_json_classes_2_cfengine( bundle_name)  == 
 This bundle is internally and will set cfengine classes based on the json 'classes' 
 variable  defined in the bundle json data, eg:

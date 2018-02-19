@@ -18,6 +18,11 @@ bundle common tcpwrappers()
                         "hosts.deny.mustache" : "$(deny)"
                     }
                 ');
+
+        centos::
+            "packages" slist => { "tcp_wrappers" };
+        debian::
+            "packages" slist => { "tcpd" };
 }
 
 bundle agent tcpwrappers_autorun()
@@ -27,45 +32,24 @@ bundle agent tcpwrappers_autorun()
 
     methods:
         any::
-
-            "install"       usebundle => tcpwrappers_install();
-            "config"        usebundle => tcpwrappers_surfsara_config();
+            "" usebundle => sara_data_autorun("tcpwrappers");
+            "" usebundle => tcpwrappers_install();
+            "" usebundle => tcpwrappers_surfsara_config();
 }
 
 bundle agent tcpwrappers_config()
 {
     methods:
-        
         any::
-            "install"       usebundle => tcpwrappers_install();
-            "config"        usebundle => tcpwrappers_surfsara_config();
+            "" usebundle => sara_data_autorun("tcpwrappers");
+            "" usebundle => tcpwrappers_install();
+            "" usebundle => tcpwrappers_surfsara_config();
 }
 
 bundle agent tcpwrappers_install()
 {
-    vars:
-
-        debian::
-            "packages_list" slist => {
-                "tcpd"
-            };
-
-        centos::
-            "packages_list" slist => {
-                "tcp_wrappers"
-            };
-
-    packages:
-
-        PACKAGE_MODULE::
-            "$(packages_list)"
-                comment     => "Install the tcpwrappers software package",
-                policy  => "present";
-
-    reports:
-        any::
-            "$(this.bundle): $(packages_list)"
-                ifvarclass => "DEBUG_tcpwrappers";
+    methods:
+        "" usebundle =>  sara_install_service_packages("tcpwrappers", "@(tcpwrappers.packages)");
 }
 
 bundle agent tcpwrappers_surfsara_config()
@@ -79,7 +63,7 @@ bundle agent tcpwrappers_surfsara_config()
             perms => mog("$(tcpwrappers.mode)", "$(tcpwrappers.owner)", "$(tcpwrappers.group)");
 
     methods:
-            "" usebundle => sara_template_autorun("tcpwrappers");
+            "" usebundle => sara_mustache_autorun("tcpwrappers");
 }
 
 @if minimum_version(99.9)

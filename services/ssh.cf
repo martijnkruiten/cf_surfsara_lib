@@ -21,11 +21,13 @@ bundle common ssh()
                 ');
 
         debian::
+            "packages"  slist => { "openssh-client", "openssh-server" };
             "service_name"      string => "ssh";      
             "sftp_server_path"  string => "/usr/lib/openssh/sftp-server",
                 comment => "Used in ssh default.json";
 
         centos::
+            "packages"  slist => { "openssh", "openssh-clients", "openssh-server", "openssh-askpass", "openssh-ldap" };
             "service_name"      string => "sshd";      
             "sftp_server_path"  string => "/usr/libexec/openssh/sftp-server",
                 comment => "Used in ssh default.json";
@@ -81,18 +83,8 @@ bundle agent ssh_daemons_check()
 
 bundle agent ssh_install()
 {
-    vars:
-        debian::
-            "packages"  slist => { "openssh-client", "openssh-server" };
-
-        centos::
-            "packages"  slist => { "openssh", "openssh-clients", "openssh-server", "openssh-askpass", "openssh-ldap" };
-        
-    packages:
-        any::
-            "$(packages)"
-                comment     => "Check if ssh packages has been installed",
-                policy  => "present";
+    methods:
+	"" usebundle => sara_install_service_packages("ssh", "@(ssh.packages)");
 }
 
 bundle agent ssh_surfsara_config()

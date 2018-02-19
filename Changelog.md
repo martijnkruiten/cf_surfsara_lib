@@ -10,7 +10,12 @@
   }
 },
 ```
-Will set the class `DHCLIENT_RESOLV_CONF` on host `r24n2`
+  * Can now which services package(s) must be installed instead of the default one(s), eg
+```
+"ssh": {
+  "packages": [ "define_your_one_ssh_package" ]
+},
+```
 
 ## ssh changes 
    * added a new json attribute for ssh bundle. `copy_files`

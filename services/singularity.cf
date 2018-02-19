@@ -11,6 +11,11 @@ bundle common singularity
                         "singularity.mustache" : "$(config_file)", 
                     }
                 ');
+
+        centos::
+            "packages" slist => { "singularity" };
+        debian::
+            "packages" slist => { "singularity-container" };
 }
 
 bundle agent singularity_autorun
@@ -20,8 +25,9 @@ bundle agent singularity_autorun
 
     methods:
         debian|centos::
-            "install" usebundle => singularity_install;
-            "config" usebundle => singularity_config;
+            "" usebundle => sara_data_autorun("singularity");
+            "" usebundle => singularity_install;
+            "" usebundle => singularity_config;
 
     reports:
         !(debian|centos)::
@@ -30,21 +36,8 @@ bundle agent singularity_autorun
 
 bundle agent singularity_install()
 {
-    vars:
-        debian::
-            "packages_list" slist => { "singularity-container" };
-        centos::
-            "packages_list" slist => { "singularity" };
-
-    packages:
-        any::
-            "$(packages_list)"
-                policy => "present",
-                version => "latest";
-
-    reports:
-        DEBUG_singularity::
-            "$(this.bundle): package: $(packages_list) is present";
+    methods:
+        "" usebundle => sara_install_service_packages("singularity", "@(singularity.packages)");
 }
 
 bundle agent singularity_config()
@@ -55,7 +48,7 @@ bundle agent singularity_config()
 
     methods:
         any::
-            "" usebundle => sara_template_autorun("singularity");
+            "" usebundle => sara_mustache_autorun("singularity");
             
     reports:
         any::

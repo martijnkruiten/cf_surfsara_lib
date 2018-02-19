@@ -19,12 +19,14 @@ bundle common ntp {
             "config_file"       string => "/etc/ntp.conf";
             "ntp_default"       string => "/etc/sysconfig/ntpd";
             "ntpdate_default"   string => "/etc/sysconfig/ntpdate";
+            "packages"          slist => { "ntp", "ntpdate" };
             "service_name"      string => "ntpd";
         debian::
             "daemon_name"       string => "ntpd";
             "config_file"       string => "/etc/ntp.conf";
             "ntp_default"       string => "/etc/default/ntp";
             "ntpdate_default"   string => "/etc/default/ntpdate";
+            "packages"          slist => { "ntp", "ntpdate" };
             "service_name"      string => "ntp";
 }
 
@@ -35,6 +37,7 @@ bundle agent ntp_autorun()
 
     methods:
         any::
+            "" usebundle => sara_data_autorun("ntp");
             "" usebundle => ntp_install();
             "" usebundle => ntp_surfsara_config();
             "" usebundle => ntp_daemons_check();
@@ -46,15 +49,8 @@ bundle agent ntp_autorun()
 
 bundle agent ntp_install()
 {           
-    vars:
-        centos|debian::
-            "packages"      slist => { "ntp", "ntpdate" };
-            
-    packages:
-        any::
-            "$(packages)"
-                comment     => "Check if ssh packages has been installed",
-                policy  => "present";
+    methods:
+        "" usebundle => sara_install_service_packages("ntp", "@(ntp.packages)");
 }
 
 bundle agent ntp_surfsara_config()
@@ -81,7 +77,7 @@ bundle agent ntp_surfsara_config()
 
     methods:
         any::
-            "" usebundle => sara_template_autorun("ntp");
+            "" usebundle => sara_mustache_autorun("ntp");
         NTP_RESTART::
             "" usebundle => ntp_daemons_restart();
         
