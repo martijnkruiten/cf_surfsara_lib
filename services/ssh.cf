@@ -20,8 +20,13 @@ bundle common ssh()
                     }
                 ');
 
+        debian.!debian8::
+            "packages"  slist => { "openssh-client", "openssh-server", "openssh-blacklist" };
+
+        debian_8::
+            "packages"  slist => { "openssh-client", "openssh-server", "openssh-blacklist", "libpam-systemd", "dbus" };
+
         debian::
-            "packages"  slist => { "openssh-client", "openssh-server" };
             "service_name"      string => "ssh";      
             "sftp_server_path"  string => "/usr/lib/openssh/sftp-server",
                 comment => "Used in ssh default.json";
