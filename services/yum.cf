@@ -108,7 +108,7 @@ bundle agent yum_repository()
     methods:
         any::
             "" usebundle => sara_data_autorun("$(this.bundle)");
-            "" usebundle => sara_mustache_copy("$(this.bundle)");
+            "" usebundle => sara_mustache_copy("$(this.bundle)", "repository.mustache");
 
         YUM_REPOS_FILE_LIST_POPULATED::
             "" usebundle => sara_mustache_cf_data_2_file("$(this.bundle)", "$(template_file)", "$(yum.repos_dir)/$(repository_names).repo", "$(repository_names)" );

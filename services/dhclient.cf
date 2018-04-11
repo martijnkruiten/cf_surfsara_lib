@@ -66,9 +66,6 @@ read. You can specify extra json data file via:
  * def.cf
 {{{
 #!cf3
-classes:
-    "DHCLIENT_RESOLV_CONF" or => { "any" };
-
 vars:
     any::
         "dhclient_json_files" slist => { "override_resolv.json" };

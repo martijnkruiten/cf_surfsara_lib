@@ -95,7 +95,7 @@ methods:
 == DEBUG ==
 
 If you want to debug this bundle set the `DEBUG_sara_user_consume_resources` class, eg:
- * `-DDEBUG_sara_user_consume_resources
+ * `-DDEBUG_sara_user_consume_resources`
 
 == Def usage ==
 
