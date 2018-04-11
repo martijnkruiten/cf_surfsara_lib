@@ -5,38 +5,113 @@ This is the "global" run services  file. Each service is proctected by a class. 
 class, eg:
  * To run the `ssh_autorun` you must set `SSH_BUNDLE` in `def.cf/def.json`. This setup can be used instead of the dynamic autorun method
 @endif
+#bundle agent surfsara_services
+#{
+#
+#    methods:
+#        CHECK_SPACE_BUNDLE::
+#            "" usebundle => check_space_autorun(),
+#                classes => results("namespace", "check_space");
+#
+#        NTP_BUNDLE::
+#            "" usebundle => ntp_autorun();
+#
+#        POSTFIX_BUNDLE::
+#            "" usebundle => postfix_bundle();
+#
+#        RESOLV_BUNDLE::
+#            "" usebundle => resolv_bundle();
+#
+#        SARA_USER_CONSUME_RESOURCES_BUNDLE::
+#            "" usebundle => sara_user_consume_resources_autorun();
+#        
+#        SINGULARITY_BUNDLE::
+#            "" usebundle => singularity_autorun();
+#
+#        SSH_BUNDLE::
+#            "" usebundle => ssh_autorun();
+#
+#        TCPWRAPPERS_BUNDLE::
+#            "" usebundle => tcpwrappers_autorun();
+#
+#        TRIPWIRE_BUNDLE::
+#            "" usebundle => tripwire_autorun();
+#
+#        YUM_BUNDLE::
+#            "" usebundle => yum_autorun();
+#}
+
 bundle agent surfsara_services
 {
+    vars:
+        "inputs" slist => maplist("$(def.surfsara_services_dir)$(this).cf", @(def.surfsara_services_enabled));
 
     methods:
-        CHECK_SPACE_BUNDLE::
-            "" usebundle => check_space_autorun(),
-                classes => results("namespace", "check_space");
+        "" usebundle => surfsara_services_data(@(def.surfsara_services_enabled)),
+            comment => "fetch/merge json data for all enabled services";
+        "" usebundle => surfsara_services_run("$(def.surfsara_services_enabled)");
 
-        NTP_BUNDLE::
-            "" usebundle => ntp_autorun();
+    reports:
+        "Service enabled: $(def.surfsara_services_enabled)"
+            ifvarclass => "DEBUG_$(this.bundle)|DEBUG";
+}
 
-        POSTFIX_BUNDLE::
-            "" usebundle => postfix_bundle();
+bundle agent surfsara_services_data(services)
+{
+    methods:
+        "" usebundle => sara_data_autorun("$(services)");
+}
 
-        RESOLV_BUNDLE::
-            "" usebundle => resolv_bundle();
+bundle agent surfsara_services_run(service)
+{
+    vars:
+        any::
+            "run_bundles" slist => bundlesmatching(".*", "template_$(service)"),
+                comment => "Fetch all bundles by tage name in all namespaces";
 
-        SARA_USER_CONSUME_RESOURCES_BUNDLE::
-            "" usebundle => sara_user_consume_resources_autorun();
-        
-        SINGULARITY_BUNDLE::
-            "" usebundle => singularity_autorun();
+            "run_class_var" slist => getvalues("sara_data.$(service)[run_class]"),
+                comment => "Only run service when the specified classes are set";
 
-        SSH_BUNDLE::
-            "" usebundle => ssh_autorun();
+            "run_class_var_str" string => format("%S", "run_class_var"),
+                ifvarclass => "DEBUG|DEBUG_services|DEBUG_$(this.bundle)";
 
-        TCPWRAPPERS_BUNDLE::
-            "" usebundle => tcpwrappers_autorun();
+    classes:
+        any::
+            "run_class_set" expression => reglist("@(run_class_var)", ".+"),
+                comment => "Service has specified classes. so check if there are met, if not set assume 'any' class";
 
-        TRIPWIRE_BUNDLE::
-            "" usebundle => tripwire_autorun();
+            "run_class" expression => "$(run_class_var)",
+                comment => "Run service if run_class definitions are met",
+                ifvarclass => "run_class_set";
 
-        YUM_BUNDLE::
-            "" usebundle => yum_autorun();
+    methods:
+        any::
+            "" usebundle => $(run_bundles),
+                comment => "Run service bundle if run_class is met or if run_class is absent",
+                classes => results("namespace", "$(service)");
+                ifvarclass => or(
+                    "run_class",
+                    "!run_class_set"
+                    );
+
+    reports:
+        any::
+            "any class used for $(service)"
+                ifvarclass => and(
+                    "DEBUG|DEBUG_services|DEBUG_$(this.bundle)",
+                    "!run_class_set"
+                    );
+                    
+            "run_class method for $(service) : $(run_class_var_str)"
+                ifvarclass => and(
+                        "DEBUG|DEBUG_services|DEBUG_$(this.bundle)",
+                        "run_class"
+                        );
+}
+
+body file control
+{
+    inputs => {
+        @(surfsara_services.inputs)
+    };
 }
