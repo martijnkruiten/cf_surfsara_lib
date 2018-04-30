@@ -19,14 +19,24 @@ bundle common ntp {
             "config_file"       string => "/etc/ntp.conf";
             "ntp_default"       string => "/etc/sysconfig/ntpd";
             "ntpdate_default"   string => "/etc/sysconfig/ntpdate";
-            "packages"          slist => { "ntp", "ntpdate" };
+            "packages"  data  => parsejson('
+                    {
+                        "ntp" : "",
+                        "ntpdate" : "",
+                    }
+                ');
             "service_name"      string => "ntpd";
         debian::
             "daemon_name"       string => "ntpd";
             "config_file"       string => "/etc/ntp.conf";
             "ntp_default"       string => "/etc/default/ntp";
             "ntpdate_default"   string => "/etc/default/ntpdate";
-            "packages"          slist => { "ntp", "ntpdate" };
+            "packages"  data  => parsejson('
+                    {
+                        "ntp" : "",
+                        "ntpdate" : ""
+                    }
+                ');
             "service_name"      string => "ntp";
 }
 

@@ -1,7 +1,14 @@
 bundle common postfix() {
     vars:
         debian::
-            "packages_add" slist => { "postfix", "bsd-mailx", "postfix-ldap" };
+            "packages_add"  data  => parsejson('
+                    {
+                        "bsd-mailx" : "",
+                        "postfix" : "",
+                        "postfix-ldap" : ""
+
+                    }
+                ');
             "packages_remove" slist => { "heirloom-mailx" };
             "service_name"      string => "postfix";
 
@@ -11,7 +18,12 @@ bundle common postfix() {
             "daemon_name"       string => "/usr/lib/postfix/sbin/master";
 
         centos::
-            "packages_add"  slist => { "postfix", "bsd-mailx" };
+            "packages_add"  data  => parsejson('
+                    {
+                        "bsd-mailx" : "",
+                        "postfix" : ""
+                    }
+                ');
             "packages_remove" slist => { "heirloom-mailx" };
             "service_name"      string => "postfix";
             "daemon_name"       string => "/usr/libexec/postfix/master";

@@ -10,10 +10,14 @@
   }
 },
 ```
-  * Can now which services package(s) must be installed instead of the default one(s), eg
+  * Can now define which services package(s) must be installed instead of the default one(s), (verions can be empty ""), eg
 ```
 "ssh": {
-  "packages": [ "define_your_one_ssh_package" ]
+  "packages": {
+        "openssh-client" : "",
+        "openssh-blacklist" : "latest",
+        ...
+    }]
 },
 ```
 
