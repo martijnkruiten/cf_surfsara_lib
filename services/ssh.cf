@@ -53,7 +53,6 @@ bundle common ssh()
                         "openssh-clients" : "",
                         "openssh-ldap" : "",
                         "openssh-server" : "",
-                        "openssh-blacklist" : ""
                     }
                 ');
             "service_name"      string => "sshd";      

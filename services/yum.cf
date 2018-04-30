@@ -6,9 +6,11 @@ bundle common yum
             "config_file"   string => "/etc/yum.conf";
             "config_dir"    string => "/etc/yum";
             "repos_dir"     string => "/etc/yum.repos.d";
-            "packages"      slist => {
-                "yum-plugin-security",
-            };
+            "packages"  data  => parsejson('
+                    {
+                        "yum-plugin-security" : ""
+                    }
+                ');
 
             "template_2_destination" data => parsejson('
                 {
