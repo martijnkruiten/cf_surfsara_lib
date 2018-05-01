@@ -1,4 +1,4 @@
-#  XXXXX-XXXX
+#  Version: 0.5 (2018-05-
   * Added installation script for MPF: `mpf_installation`
   * Skip mustache expand if not a valid destination
   * Use standard cfengine `remote_dcp` bundle instead of `sara_hash_no_perms_cp`
