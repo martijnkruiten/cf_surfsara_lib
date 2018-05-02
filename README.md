@@ -1,4 +1,4 @@
-# SURFsara CFEngine library for mustache/json templates 
+# SURFsara CFEngine Library (SCL) for mustache/json templates 
 
 At SURFsara we have developed a general library to generate files from templates. In our setup we can easily
 specify the default values and override them in other json file(s) or via def.cf/json. The goal is to set
