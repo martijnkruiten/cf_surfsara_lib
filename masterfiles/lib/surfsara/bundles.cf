@@ -230,6 +230,10 @@ bundle agent sara_json_copy(bundle_name, files)
             "files_str" string => format("%S", files),
                 ifvarclass => "DEBUG_$(bundle_name)|DEBUG|DEBUG_JSON|DEBUG_MUSTACHE";
 
+        TEMPLATE_LOCAL_COPY|JSON_LOCAL_COPY::
+            "local_dir" string => "$(this.promise_dirname)/../../../$(bundle_json_dir)",
+                comment => "Can be replace by $(sys.policy_entry_dirname)/../...";
+
     files:
         any::
             "$(def.node_template_dir)/$(bundle_name)/."
@@ -237,20 +241,30 @@ bundle agent sara_json_copy(bundle_name, files)
                 perms => mog("0700", "root", "root"),
                 create => "true";
 
-        !(JSON_SKIP_COPY|MUSTACHE_SKIP_COPY)::
+        !(TEMPLATE_SKIP_COPY|TEMPLATE_LOCAL_COPY|JSON_LOCAL_COPY|JSON_SKIP_COPY)::
             "$(def.node_template_dir)/$(bundle_name)/$(files)"
                 comment     => "Let's copy the json files",
                 perms       => mog("0600", "root", "root"),
                 classes     => if_repaired("$(bundle_name)_json_copied"),
                 copy_from   => remote_dcp("$(bundle_json_dir)/$(files)", "$(sys.policy_hub)");
 
+        TEMPLATE_LOCAL_COPY|JSON_LOCAL_COPY::
+            "$(def.node_template_dir)/$(bundle_name)/$(files)"
+                comment     => "Let's copy the json files",
+                perms       => mog("0600", "root", "root"),
+                classes     => if_repaired("$(bundle_name)_json_copied"),
+                copy_from   => local_cp("$(local_dir)/$(files)");
+
     reports:
         any::
             "$(this.bundle): json file(s) : $(files_str)"
                 ifvarclass => "DEBUG_$(bundle_name)|DEBUG|DEBUG_JSON|DEBUG_MUSTACHE";
 
-        MUSTACHE_SKIP_COPY|JSON_SKIP_COPY::
-            "Skip copying of JSON data files";
+        TEMPLATE_SKIP_COPY|JSON_SKIP_COPY::
+            "$(this.bundle): Skipped copying of json files";
+
+        TEMPLATE_LOCAL_COPY|JSON_LOCAL_COPY::
+            "$(this.bundle) copying json files from: $(local_dir)";
 }
 
 @if minimum_version(99.9)
@@ -349,6 +363,10 @@ bundle agent sara_mustache_copy(bundle_name, files)
             "files_str" string => format("%S", files),
                 ifvarclass => "DEBUG_$(bundle_name)|DEBUG|DEBUG_MUSTACHE";
 
+        TEMPLATE_LOCAL_COPY|MUSTACHE_LOCAL_COPY::
+            "local_dir" string => "$(this.promise_dirname)/../../../$(bundle_template_dir)",
+                comment => "Can be replace by $(sys.policy_entry_dirname)/../...";
+
     files:
         any::
             "$(def.node_template_dir)/$(bundle_name)/."
@@ -356,7 +374,7 @@ bundle agent sara_mustache_copy(bundle_name, files)
                 perms => mog("0700", "root", "root"),
                 create => "true";
 
-        !MUSTACHE_SKIP_COPY:: 
+        !(TEMPLATE_SKIP_COPY|TEMPLATE_LOCAL_COPY|MUSTACHE_LOCAL_COPY|MUSTACHE_SKIP_COPY)::
             "$(def.node_template_dir)/$(bundle_name)/$(files)"
                 comment     => "Let's copy the mustache files",
                 move_obstructions => "true",
@@ -364,13 +382,25 @@ bundle agent sara_mustache_copy(bundle_name, files)
                 classes     => if_repaired("$(bundle_name)_mustache_copied"),
                 copy_from   => remote_dcp("$(bundle_template_dir)/$(files)", "$(sys.policy_hub)");
 
+       TEMPLATE_LOCAL_COPY|MUSTACHE_LOCAL_COPY::
+            "$(def.node_template_dir)/$(bundle_name)/$(files)"
+                comment     => "Let's copy the json files",
+                perms       => mog("0600", "root", "root"),
+                classes     => if_repaired("$(bundle_name)_mustache_copied"),
+                copy_from   => local_cp("$(local_dir)/$(files)");
+                # version 3.12/3,13
+                #copy_from   => local_cp("$(sys.policy_entry_dirname)/../$(bundle_template_dir)/$(files)");
+
     reports:
         any::
             "$(this.bundle) template file : $(files_str)"
                 ifvarclass => "DEBUG_$(bundle_name)|DEBUG|DEBUG_MUSTACHE";
 
-        MUSTACHE_SKIP_COPY:: 
-            "MUSTACHE skipped copying of mustache template files";
+        TEMPLATE_SKIP_COPY|MUSTACHE_SKIP_COPY::
+            "$(this.bundle): Skipped copying of mustache files";
+
+        TEMPLATE_LOCAL_COPY|JSON_LOCAL_COPY::
+            "$(this.bundle) copying template files from: $(local_dir)";
 }
 
 @if minimum_version(99.9)
