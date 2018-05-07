@@ -5,64 +5,28 @@ This is the "global" run services  file. Each service is proctected by a class. 
 class, eg:
  * To run the `ssh_autorun` you must set `SSH_BUNDLE` in `def.cf/def.json`. This setup can be used instead of the dynamic autorun method
 @endif
-#bundle agent surfsara_services
-#{
-#
-#    methods:
-#        CHECK_SPACE_BUNDLE::
-#            "" usebundle => check_space_autorun(),
-#                classes => results("namespace", "check_space");
-#
-#        NTP_BUNDLE::
-#            "" usebundle => ntp_autorun();
-#
-#        POSTFIX_BUNDLE::
-#            "" usebundle => postfix_bundle();
-#
-#        RESOLV_BUNDLE::
-#            "" usebundle => resolv_bundle();
-#
-#        SARA_USER_CONSUME_RESOURCES_BUNDLE::
-#            "" usebundle => sara_user_consume_resources_autorun();
-#        
-#        SINGULARITY_BUNDLE::
-#            "" usebundle => singularity_autorun();
-#
-#        SSH_BUNDLE::
-#            "" usebundle => ssh_autorun();
-#
-#        TCPWRAPPERS_BUNDLE::
-#            "" usebundle => tcpwrappers_autorun();
-#
-#        TRIPWIRE_BUNDLE::
-#            "" usebundle => tripwire_autorun();
-#
-#        YUM_BUNDLE::
-#            "" usebundle => yum_autorun();
-#}
-
-bundle agent surfsara_services
+bundle agent sara_services
 {
     vars:
-        "inputs" slist => maplist("$(def.surfsara_services_dir)$(this).cf", @(def.surfsara_services_enabled));
+        "inputs" slist => maplist("$(def.sara_services_dir)$(this).cf", @(def.sara_services_enabled));
 
     methods:
-        "" usebundle => surfsara_services_data(@(def.surfsara_services_enabled)),
+        "" usebundle => sara_services_data(@(def.sara_services_enabled)),
             comment => "fetch/merge json data for all enabled services";
-        "" usebundle => surfsara_services_run("$(def.surfsara_services_enabled)");
+        "" usebundle => sara_services_run("$(def.sara_services_enabled)");
 
     reports:
-        "Service enabled: $(def.surfsara_services_enabled)"
+        "Service enabled: $(def.sara_services_enabled)"
             ifvarclass => "DEBUG_$(this.bundle)|DEBUG";
 }
 
-bundle agent surfsara_services_data(services)
+bundle agent sara_services_data(services)
 {
     methods:
         "" usebundle => sara_data_autorun("$(services)");
 }
 
-bundle agent surfsara_services_run(service)
+bundle agent sara_services_run(service)
 {
     vars:
         any::
@@ -112,6 +76,6 @@ bundle agent surfsara_services_run(service)
 body file control
 {
     inputs => {
-        @(surfsara_services.inputs)
+        @(sara_services.inputs)
     };
 }
