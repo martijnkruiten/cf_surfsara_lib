@@ -2,7 +2,8 @@
   * Added installation script for MPF: `mpf_installation`
   * Skip mustache expand if not a valid destination
   * Use standard cfengine `remote_dcp` bundle instead of `sara_hash_no_perms_cp`
-  * Can now set classes based on a cfengine expression in the bundle json data, ala def.json, eg
+  * Force local copy of mustache/json file(s) with `-DTEMPLATE_LOCAL_COPY`, `-DMUSTACHE_LOCAL_COPY` or `-DJSON_LOCAL_COPY`
+  * Can now set bundle classes based on a cfengine expression in the bundle json data, ala def.json, eg
 ```
 "dhclient": {
   "classes": { 

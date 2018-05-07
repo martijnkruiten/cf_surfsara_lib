@@ -176,7 +176,7 @@ IF you definied your own `def.cf`and do want to use the one include in this fram
 ## cf-agent command line options
 
 The SURFsara CFEngine library also checks for some classes:
- * To test with a local `templates` directory. This directory must be one level higher the your policy files directory (../templates):
+ * To test with a local `templates` directory. This directory must be one level higher than your policy files directory (../templates):
   * `-DTEMPLATE_LOCAL_COPY`: Copy from local directory the mustache and json file(s).
   * `-DMUSTACHE_LOCAL_COPY`: Copy from local directory the mustache file(s)
   * `-DJSON_LOCAL_COPY`: Copy from local directory the json file(s)
