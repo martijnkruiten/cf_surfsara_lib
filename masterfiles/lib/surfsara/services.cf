@@ -1,42 +1,130 @@
 
 @if minimum_version(99.9)
 = services.cf =
-This is the "global" run services  file. Each service is proctected by a class. To activate you have to set the corresponding 
-class, eg:
- * To run the `ssh_autorun` you must set `SSH_BUNDLE` in `def.cf/def.json`. This setup can be used instead of the dynamic autorun method
+
+You can control which services must be run by specifying the following variable in:
+ * def.json
+{{{
+#!json
+"sara_services_enabled": [ "ssh", "ntp" ]
+}}}
+ * def.cf
+{{{
+#!cf3
+"sara_services_enabled" slist => [ "ssh", "ntp" ];
+}}}
+
+This variable will include the cfengine services file from the directory
+`def.sara_services_dir` (default value: services) and run all bundles that have
+the meta tag, eg: `template_ssh`. The bundle run can be protected by an class
+statement, default is `any`, eg:
+{{{
+#!json
+"ssh": {
+    "run_class": "debian|centos"
+}
+}}}
+
+This will run the ssh service only for debian and centos hosts.
 @endif
-bundle agent surfsara_services
+bundle common sara_services
 {
+    vars:
+        "enabled" slist => { @(def.sara_services_enabled) },
+            ifvarclass => and(
+                    isvariable("def.sara_services_enabled")
+                );
+
+        "enabled" slist => {},
+            ifvarclass => and(
+                    not(isvariable("def.sara_services_enabled"))
+                );
+
+        "dir" string => ifelse(
+            isvariable( "def.sara_services_dir"), $(def.sara_services_dir),
+            "services/surfsara");
+
+    classes:
+        "sara_services_set" expression => isvariable("def.sara_services_enabled");
+}
+
+bundle agent sara_services_autorun
+{
+    vars:
+        "inputs" slist => maplist("$(sara_services.dir)/$(this).cf", @(sara_services.enabled));
 
     methods:
-        CHECK_SPACE_BUNDLE::
-            "" usebundle => check_space_autorun(),
-                classes => results("namespace", "check_space");
+        sara_services_set::
+            "" usebundle => sara_services_data(@(sara_services.enabled)),
+                comment => "fetch/merge json data for all enabled services";
+            "" usebundle => sara_services_run("$(sara_services.enabled)");
 
-        NTP_BUNDLE::
-            "" usebundle => ntp_autorun();
+    reports:
+        sara_services_set::
+            "$(this.bundle) service enabled: $(sara_services.enabled)"
+                ifvarclass => "DEBUG|DEBUG_services|DEBUG_$(this.bundle)";
+        !sara_services_set::
+            "$(this.bundle) no service enabled, set 'def.sara_services_enabled'"
+                ifvarclass => "DEBUG|DEBUG_services|DEBUG_$(this.bundle)";
+}
 
-        POSTFIX_BUNDLE::
-            "" usebundle => postfix_bundle();
+bundle agent sara_services_data(services)
+{
+    methods:
+        "" usebundle => sara_data_autorun("$(services)");
+}
 
-        RESOLV_BUNDLE::
-            "" usebundle => resolv_bundle();
+bundle agent sara_services_run(service)
+{
+    vars:
+        any::
+            "run_bundles" slist => bundlesmatching(".*", "template_$(service)"),
+                comment => "Fetch all bundles by tage name in all namespaces";
 
-        SARA_USER_CONSUME_RESOURCES_BUNDLE::
-            "" usebundle => sara_user_consume_resources_autorun();
-        
-        SINGULARITY_BUNDLE::
-            "" usebundle => singularity_autorun();
+            "run_class_var" slist => getvalues("sara_data.$(service)[run_class]"),
+                comment => "Only run service when the specified classes are set";
 
-        SSH_BUNDLE::
-            "" usebundle => ssh_autorun();
+            "run_class_var_str" string => format("%S", "run_class_var"),
+                ifvarclass => "DEBUG|DEBUG_services|DEBUG_$(this.bundle)";
 
-        TCPWRAPPERS_BUNDLE::
-            "" usebundle => tcpwrappers_autorun();
+    classes:
+        any::
+            "run_class_set" expression => reglist("@(run_class_var)", ".+"),
+                comment => "Service has specified classes. so check if there are met, if not set assume 'any' class";
 
-        TRIPWIRE_BUNDLE::
-            "" usebundle => tripwire_autorun();
+            "run_class" expression => "$(run_class_var)",
+                comment => "Run service if run_class definitions are met",
+                ifvarclass => "run_class_set";
 
-        YUM_BUNDLE::
-            "" usebundle => yum_autorun();
+    methods:
+        any::
+            "" usebundle => $(run_bundles),
+                comment => "Run service bundle if run_class is met or if run_class is absent",
+                classes => results("namespace", "$(service)"),
+                ifvarclass => or(
+                    "run_class",
+                    "!run_class_set"
+                    );
+
+    reports:
+        any::
+            "$(this.bundle): '$(service)' is enabled for `any' class"
+                ifvarclass => and(
+                    "DEBUG|DEBUG_services|DEBUG_$(this.bundle)",
+                    "!run_class_set"
+                    );
+
+            "$(this.bundle): '$(service)' is only enabled for class: `$(run_class_var_str)`"
+                ifvarclass => and(
+                        "DEBUG|DEBUG_services|DEBUG_$(this.bundle)",
+                        "run_class_set"
+                        );
+}
+
+
+body file control
+{
+    inputs => {
+        @(sara_services_autorun.inputs)
+    };
 }

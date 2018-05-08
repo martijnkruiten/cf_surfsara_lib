@@ -1,5 +1,6 @@
 #  Version: 0.5 (2018-05-
   * Added installation script for MPF: `mpf_installation`
+  * Added SURFsara autorun services setup, controlled via `def.sara_services_enabled`
   * Skip mustache expand if not a valid destination
   * Use standard cfengine `remote_dcp` bundle instead of `sara_hash_no_perms_cp`
   * Force local copy of mustache/json file(s) with `-DTEMPLATE_LOCAL_COPY`, `-DMUSTACHE_LOCAL_COPY` or `-DJSON_LOCAL_COPY`
@@ -11,7 +12,7 @@
   }
 },
 ```
-  * Can now define which services package(s) must be installed instead of the default one(s), (verions can be empty ""), eg
+  * Can now define which services package(s) must be installed instead of the default one(s), (version can be empty ""), eg:
 ```
 "ssh": {
   "packages": {
@@ -20,6 +21,44 @@
         ...
     }]
 },
+```
+
+## autorun surfsara services
+
+If `autorun` is enabled in the MPF framework. You can control which service file(s) are included, eg:
+```
+{
+  "vars": {
+    "sara_services_enabled" : [ "ssh", "ntp" ]
+  }
+}
+```
+
+This will include the service files `services/surfsara/ssh.cf` and `services/surfsara/ntp`
+and run/configure the ssh/ntp services with the aid of mustache/json data. The bundle run can
+be protected by a class statement (def.json)  default is `any`, eg:
+```
+"vars": {
+    "sara_services_enabled" : [ "ssh", "ntp" ]
+}
+}
+"ssh": {
+    "run_class": "debian|centos"
+}
+
+This will run the ssh service only for debian and centos hosts.
+```
+
+### Own Framwork
+
+The default setting for `sara_services_dir` is `services/surfsara`.  If you copied the
+surfsara services files to another location you must set the `def.sara_services_dir`
+variable.
+
+In your framework call the following bundle and see above for `def.json` config:
+```
+methods:
+    "" usebundle => sara_services_autorun();
 ```
 
 ## ssh changes 
@@ -51,7 +90,7 @@ classes:
 ```
 ## postfix changes
 
- * Added functionallity to enable `virtual_alias_maps` entry in postfi main.cf. The following example will copy the mustache template file from `templates/postfix/ldap_aliases_map.mustache` and expand it with the specified inline json data:
+ * Added functionallity to enable `virtual_alias_maps` entry in postfix main.cf. The following example will copy the mustache template file from `templates/postfix/ldap_aliases_map.mustache` and expand it with the specified inline json data:
 ```
 "classes" : {
     "VIRTUAL_MAPS": [ "mta.example.com" ],:
