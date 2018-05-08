@@ -5,6 +5,7 @@ bundle common surfsara_stdlib_common
             "standard" slist => {
                 "$(this.promise_dirname)/bundles.cf",
                 "$(this.promise_dirname)/processes.cf",
+                "$(this.promise_dirname)/services.cf",
             };
 
             "version" string => "SURFSARA Library 1.0.0"; 
