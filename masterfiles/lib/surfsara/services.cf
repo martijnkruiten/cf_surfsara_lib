@@ -42,7 +42,7 @@ bundle common sara_services
 
         "dir" string => ifelse(
             isvariable( "def.sara_services_dir"), $(def.sara_services_dir),
-            "services");
+            "services/surfsara");
 
     classes:
         "sara_services_set" expression => isvariable("def.sara_services_enabled");
