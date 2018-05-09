@@ -28,8 +28,20 @@ bundle common postfix() {
             "service_name"      string => "postfix";
             "daemon_name"       string => "/usr/libexec/postfix/master";
 
+        SLES::
+            "packages_add"  data  => parsejson('
+                    {
+                        "mailx" : "",
+                        "postfix" : ""
+                    }
+                ');
+            "service_name"      string => "postfix";
+            "daemon_name"       string => "/usr/lib/postfix/master";
+
         any::
             "newaliases"        string => "/usr/bin/newaliases";
+            "postmap_cmd"       string => "/usr/sbin/postmap";
+            "config_dir"        string => "/etc/postfix/";
         
             ## Mustache templates
             "template_2_destination" data => parsejson('
