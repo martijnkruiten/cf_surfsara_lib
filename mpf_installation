@@ -1,8 +1,9 @@
 #!/bin/sh
 
+## Some defaults can be overriden by command line opts
+#
 CFENGINE_DIR=/var/cfengine
 CFENGINE_MASTERFILES_DIR=$CFENGINE_DIR/masterfiles
-CFENGINE_SERVICES_DIR=$CFENGINE_MASTERFILES_DIR/services
 CFENGINE_TEMPLATES_DIR=$CFENGINE_DIR/templates
 
 SURFSARA_LIB="masterfiles/lib/surfsara"
@@ -15,28 +16,46 @@ SURFSARA_SERVICES="services"
 ### Functions 
 print_usage()
 {
-    echo "$(basename $0) [-d <cfengine_dir]"
+    echo "$(basename $0) [-c <cfengine_dir] [-m <masterfiles_dir>] [ -t <template_dir>] "
 }
 
-while getopts "hd:" opt
+while getopts "hc:m:t:" opt
 do
     case $opt in
-      d)
+      c)
         CFENGINE_DIR="$OPTARG"
-        ;;
+        CFENGINE_MASTERFILES_DIR=$CFENGINE_DIR/masterfiles
+        CFENGINE_TEMPLATES_DIR=$CFENGINE_DIR/templates
+      ;;
+      m)
+        CFENGINE_MASTERFILES_DIR="$OPTARG"
+      ;;
       h)
         print_usage
         exit 0
-        ;;
+      ;;
+      t)
+        CFENGINE_TEMPLATES_DIR="$OPTARG"
+      ;;
       \?)
         echo "-----------------------------------------------------"
         echo "            Received an invalid option"
         echo "-----------------------------------------------------"
         print_usage
         exit 1
-        ;;
+      ;;
     esac
 done
+
+## 
+CFENGINE_SERVICES_DIR=$CFENGINE_MASTERFILES_DIR/services
+
+echo "MPF installation settings":
+cat << EOF
+    dir: $CFENGINE_DIR
+    masterfiles: $CFENGINE_MASTERFILES_DIR
+    templates: $CFENGINE_TEMPLATES_DIR
+EOF
 
 if [ ! -d $CFENGINE_MASTERFILES_DIR ]
 then
