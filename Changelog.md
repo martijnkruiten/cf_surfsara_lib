@@ -1,5 +1,5 @@
 #  Version: 0.5 (2018-05-
-  * Added installation script for MPF: `mpf_installation`
+  * Added installation script for MPF: `mpf_installation`, cfengine version tested: 3.10,3.11 and 3.12
   * Added SURFsara autorun services setup, controlled via `def.sara_services_enabled`
   * Skip mustache expand if not a valid destination
   * Use standard cfengine `remote_dcp` bundle instead of `sara_hash_no_perms_cp`
