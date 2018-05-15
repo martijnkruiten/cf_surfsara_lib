@@ -26,29 +26,26 @@ bundle agent sara_data(bundle_name, json_files)
 {
     vars:
         any::
-            "template_dir"      string => "$(def.node_template_dir)/$(bundle_name)";
+            "template_dir" string => "$(def.node_template_dir)/$(bundle_name)";
 
             "$(bundle_name)"  data  => parsejson("{}");
 
-            "data_$(json_files)"   data => readdata("$(template_dir)/$(json_files)", "auto"),
-                ifvarclass => canonify("sara_data_json_file_exists_$(json_files)");
-
-            "$(bundle_name)" data => mergedata("$(bundle_name)", "data_$(json_files)"),
+            "$(bundle_name)" data => mergedata("$(bundle_name)", readdata("$(template_dir)/$(json_files)", auto)),
+                comment => "Merge the given json files",
                 ifvarclass => canonify("sara_data_json_file_exists_$(json_files)");
 
             "$(bundle_name)" data => mergedata("$(bundle_name)", "def.$(bundle_name)"),
+                comment => "Merge the bundle section in def.json",
                 ifvarclass => canonify("sara_data_def_json_$(bundle_name)");
 
             "$(bundle_name)" data => data_expand($(bundle_name)),
                 comment => "Expand CFengine variables found in countainer";
 
+        ## Neeed if we want to DEBUG the json data, no 'with' promise attribute
+        # for these cfengne versions
+        #
+        cfengine_3_7|cfengine_3_10::
             "$(bundle_name)_str" string => format("%S", "$(bundle_name)"),
-                ifvarclass => and( 
-                                canonify("sara_data_json_file_exists_$(json_files)"),
-                                "DEBUG_$(bundle_name)|DEBUG|DEBUG_MUSTACHE_JSON|DEBUG_MUSTACHE"
-                              );
-
-            "data_str_$(json_files)" string => format("%S", "data_$(json_files)"),
                 ifvarclass => and( 
                                 canonify("sara_data_json_file_exists_$(json_files)"),
                                 "DEBUG_$(bundle_name)|DEBUG|DEBUG_MUSTACHE_JSON|DEBUG_MUSTACHE"
@@ -60,6 +57,20 @@ bundle agent sara_data(bundle_name, json_files)
                                 "DEBUG_$(bundle_name)|DEBUG|DEBUG_MUSTACHE_JSON|DEBUG_MUSTACHE"
                               );
 
+            "data_$(json_files)"   data => readdata("$(template_dir)/$(json_files)", "auto"),
+                comment => "This only works before versions 3.12, dot (.) is not allowed anymore in var name)",
+                ifvarclass => and( 
+                                canonify("sara_data_json_file_exists_$(json_files)"),
+                                "DEBUG_$(bundle_name)|DEBUG|DEBUG_MUSTACHE_JSON|DEBUG_MUSTACHE"
+                              );
+
+            "data_str_$(json_files)" string => format("%S", "data_$(json_files)"),
+                comment => "This only works before versions 3.12, dot (.) is not allowed anymore in var name)",
+                ifvarclass => and( 
+                                canonify("sara_data_json_file_exists_$(json_files)"),
+                                "DEBUG_$(bundle_name)|DEBUG|DEBUG_MUSTACHE_JSON|DEBUG_MUSTACHE"
+                              );
+
     classes:
         any::
             "sara_data_json_file_exists_$(json_files)" expression => fileexists("$(template_dir)/$(json_files)"),
@@ -68,20 +79,39 @@ bundle agent sara_data(bundle_name, json_files)
 
     reports:
         any::
+@if minimum_version(3.11)
             "$(this.bundle): template_data: 
-                $($(bundle_name)_str)"
-                comment => "Display the use template data",
+                $(with)"
+                comment => "Display the used template data",
+                with => string_mustache("{{$-top-}}", "$(bundle_name)"),
                 ifvarclass => "DEBUG_$(bundle_name)|DEBUG|DEBUG_MUSTACHE_JSON|DEBUG_MUSTACHE";
 
-            "$(this.bundle): $(json_files) : 
-              $(data_str_$(json_files))"
-                comment => "Display the parsed json file data",
+            "$(this.bundle): def.json
+              $(with)"
+                comment => "Display the bundle json data defined in def.json",
+                with => string_mustache("{{$-top-}}", "def.$(bundle_name)"),
+                ifvarclass => "sara_data_def_json_$(bundle_name).(DEBUG_$(bundle_name)|DEBUG_MUSTACHE_JSON|DEBUG_MUSTACHE)";
+
+            "$(this.bundle): $(json_files) 
+                $(with)" with => string_mustache("{{$-top-}}", readdata("$(template_dir)/$(json_files)", "auto")),
                 ifvarclass => "DEBUG_$(bundle_name)|DEBUG_MUSTACHE_JSON|DEBUG_MUSTACHE";
+@endif
+
+        cfengine_3_10|cfengine_3_7::
+            "$(this.bundle): template_data: 
+                $($(bundle_name)_str)"
+                comment => "Display the used template data",
+                ifvarclass => "DEBUG_$(bundle_name)|DEBUG|DEBUG_MUSTACHE_JSON|DEBUG_MUSTACHE";
 
             "$(this.bundle): def.json
               $(data_def_json_$(bundle_name))"
                 comment => "Display the bundle json data defined in def.json",
                 ifvarclass => "sara_data_def_json_$(bundle_name).(DEBUG_$(bundle_name)|DEBUG_MUSTACHE_JSON|DEBUG_MUSTACHE)";
+
+            "$(this.bundle): $(json_files) : 
+              $(data_str_$(json_files))"
+                comment => "Display the parsed json file data",
+                ifvarclass => "DEBUG_$(bundle_name)|DEBUG_MUSTACHE_JSON|DEBUG_MUSTACHE";
 }
 
 @if minimum_version(99.9)
