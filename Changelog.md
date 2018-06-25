@@ -1,4 +1,4 @@
-#  Version: 0.5 (2018-05-
+#  Version: 0.9 (2018-06-
   * Added installation script for MPF: `mpf_installation`, cfengine version tested: 3.10,3.11 and 3.12
   * Added SURFsara autorun services setup, controlled via `def.sara_services_enabled`
   * Skip mustache expand if not a valid destination
@@ -12,17 +12,37 @@
   }
 },
 ```
-  * Can now define which services package(s) must be installed instead of the default one(s), (version can be empty ""), eg:
+  * Service packages defined in the bundle can now be overridden by 'def.json'. The values can be `install/remove/purge`.
+
+## pervice packages override options
+
+The following example will install any version of `openssh-client` and the latest version of `openssh-blacklist`.
 ```
 "ssh": {
   "packages": {
-        "openssh-client" : "",
-        "openssh-blacklist" : "latest",
-        ...
-    }]
+        "install": {
+            "openssh-client" : "",
+            "openssh-blacklist" : "latest",
+        }
+    }
+    ....
 },
 ```
 
+The next one will install `openssh-client` package and remove the `openssh-blacklist` package:
+```
+"ssh": {
+  "packages": {
+        "install": {
+            "openssh-client" : ""
+        },
+        "remove": {
+            "openssh-blacklist" : ""
+        }
+    }
+    ....
+},
+```
 ## autorun surfsara services
 
 If `autorun` is enabled in the MPF framework. You can control which service file(s) are included, eg:
