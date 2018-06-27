@@ -1,15 +1,18 @@
 bundle common postfix() {
     vars:
         debian::
-            "packages_add"  data  => parsejson('
+            "packages"  data  => parsejson('
                     {
-                        "bsd-mailx" : "",
-                        "postfix" : "",
-                        "postfix-ldap" : ""
-
+                        "install": {
+                            "bsd-mailx" : "",
+                            "postfix" : "",
+                            "postfix-ldap" : ""
+                        },
+                        "purge": {
+                            "heirloom-mailx": ""
+                        }
                     }
                 ');
-            "packages_remove" slist => { "heirloom-mailx" };
             "service_name"      string => "postfix";
 
         debian_6|debian_7|debian_8::
@@ -18,21 +21,27 @@ bundle common postfix() {
             "daemon_name"       string => "/usr/lib/postfix/sbin/master";
 
         centos::
-            "packages_add"  data  => parsejson('
+            "packages"  data  => parsejson('
                     {
-                        "bsd-mailx" : "",
-                        "postfix" : ""
+                        "install": {
+                            "bsd-mailx" : "",
+                            "postfix" : ""
+                        },
+                        "remove": {
+                            "heirloom-mailx": ""
+                        }
                     }
                 ');
-            "packages_remove" slist => { "heirloom-mailx" };
             "service_name"      string => "postfix";
             "daemon_name"       string => "/usr/libexec/postfix/master";
 
         SLES::
-            "packages_add"  data  => parsejson('
+            "packages"  data  => parsejson('
                     {
-                        "mailx" : "",
-                        "postfix" : ""
+                        "install": {
+                            "mailx" : "",
+                            "postfix" : ""
+                        }
                     }
                 ');
             "service_name"      string => "postfix";
@@ -85,13 +94,7 @@ bundle agent postfix_autorun()
 bundle agent postfix_install()
 {
     methods:
-        "" usebundle => sara_install_service_packages("postfix", "@(postfix.packages_add)"); 
-
-    packages:
-        any::
-            "$(postfix.packages_remove)"
-                policy => "absent",
-                comment => "Make sure we DON't use the heirloom-mailx command";
+        "" usebundle => sara_service_packages("postfix", "@(postfix.packages)"); 
 }
 
 bundle agent postfix_daemons_check

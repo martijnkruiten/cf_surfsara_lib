@@ -22,13 +22,17 @@ bundle common tcpwrappers()
         centos::
             "packages"  data  => parsejson('
                     {
-                        "tcp_wrappers" : ""
+                        "install": {
+                            "tcp_wrappers" : ""
+                        }
                     }
                 ');
         debian::
             "packages"  data  => parsejson('
                     {
-                        "tcpd" : ""
+                        "install": {
+                            "tcpd" : ""
+                        }
                     }
                 ');
 }
@@ -57,7 +61,7 @@ bundle agent tcpwrappers_config()
 bundle agent tcpwrappers_install()
 {
     methods:
-        "" usebundle =>  sara_install_service_packages("tcpwrappers", "@(tcpwrappers.packages)");
+        "" usebundle =>  sara_service_packages("tcpwrappers", "@(tcpwrappers.packages)");
 }
 
 bundle agent tcpwrappers_surfsara_config()

@@ -15,13 +15,17 @@ bundle common singularity
         centos::
             "packages"  data  => parsejson('
                     {
-                        "singularity" : "latest"
+                        "install": {
+                            "singularity" : "latest"
+                        }
                     }
                 ');
         debian::
             "packages"  data  => parsejson('
                     {
-                        "singularity-container" : "latest"
+                        "install": {
+                            "singularity-container" : "latest"
+                        }
                     }
                 ');
 }
@@ -45,7 +49,7 @@ bundle agent singularity_autorun
 bundle agent singularity_install()
 {
     methods:
-        "" usebundle => sara_install_service_packages("singularity", "@(singularity.packages)");
+        "" usebundle => sara_service_packages("singularity", "@(singularity.packages)");
 }
 
 bundle agent singularity_config()
