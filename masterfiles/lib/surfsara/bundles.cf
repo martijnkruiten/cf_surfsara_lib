@@ -28,7 +28,7 @@ bundle agent sara_data(bundle_name, json_files)
         any::
             "template_dir" string => "$(def.node_template_dir)/$(bundle_name)";
 
-            "files_str" string => format("%S", json_files)
+            "files_str" string => format("%S", json_files),
                 ifvarclass => "DEBUG_$(bundle_name)|DEBUG|DEBUG_JSON|DEBUG_MUSTACHE";
 
             "$(bundle_name)"  data  => parsejson("{}");
