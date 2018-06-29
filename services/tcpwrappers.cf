@@ -198,8 +198,8 @@ vars:
 #!json
 "vars": {
     "tcpwrappers": {
-        "tcpwrappers_json_files" slist => { "allow_ssh.json", "allow_http.json" };
-    }  
+        "json_files": [ "allow_ssh.json", "allow_http.json" ]
+    } 
 }  
 }}}
  * override allow_ssh setting in def.cf:
@@ -212,6 +212,7 @@ vars:
 {{{
 #!json
     "tcpwrappers" : {
+        "json_files" : [ "allow_http.json" ],
         "allow_ssh": [
             { "allow": "10.101.32.0/255.255.255.0", "desc": "ALLOW admin lan" },
         ]

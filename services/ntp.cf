@@ -193,7 +193,8 @@ vars:
  * Set/Override the daemon options variable in ''def.json'':  
 {{{  
 #!json  
-        "ntp" : {  
+        "ntp" : {
+            "json_files": [ "debian.json" ],
             "daemon_options": "-g"  
         },  
 }}}  

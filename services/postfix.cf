@@ -315,6 +315,7 @@ vars:
 #!json
         "postfix" : {
             "alias_root_email_address": "noreply@surfsara.nl",
+            "json_files": [ "zimbra.json" ],
             "file_aliases_lines": [ {"name": "beowulf", "value": "|\"/usr/bin/run_email2trac --project beowulf\""} ]
         },  
 }}}     

@@ -152,6 +152,7 @@ vars:
 {{{
 #!json
         "singularity" : {
+            "json_files": [ "test_server.json" ],
             "enable_overlay": "no"
         },
 }}}
