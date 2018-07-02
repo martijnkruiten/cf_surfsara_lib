@@ -350,16 +350,18 @@ bundle agent sara_json_copy_and_merge(bundle_name)
             "files" data => mergedata("files", "def.$(bundle_name)[json_files]");
             "copy_files" data => mergedata("copy_files", "def.$(bundle_name)[json_files]");
 
-        local_set::
+        def_local_set::
             "files" data => mergedata("files", "def.$(bundle_name)_local_generated_json_files");
-            #"files" data => mergedata("files", "def.$(bundle_name)[local_generated_json_files]");
+        bundle_local_set::
+            "files" data => mergedata("files", "def.$(bundle_name)[local_generated_json_files]");
 
     classes:
         any::
             "bundle_set" expression => isvariable("def.$(bundle_name)[json_files]");
             "def_set" expression => isvariable("def.$(bundle_name)_json_files");
-            "local_set" expression => isvariable("def.$(bundle_name)_local_generated_json_files");
-            #"local_set" expression => isvariable("def.$(bundle_name)[local_generated_json_files]");
+
+            "def_local_set" expression => isvariable("def.$(bundle_name)_local_generated_json_files");
+            "bundle_local_set" expression => isvariable("def.$(bundle_name)[local_generated_json_files]");
 
     methods:
         "" usebundle => sara_json_copy("$(bundle_name)", "@(copy_files)");
