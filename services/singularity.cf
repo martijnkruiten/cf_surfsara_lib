@@ -13,9 +13,17 @@ bundle common singularity
                 ');
 
         centos::
-            "packages" slist => { "singularity" };
+            "packages"  data  => parsejson('
+                    {
+                        "singularity" : "latest"
+                    }
+                ');
         debian::
-            "packages" slist => { "singularity-container" };
+            "packages"  data  => parsejson('
+                    {
+                        "singularity-container" : "latest"
+                    }
+                ');
 }
 
 bundle agent singularity_autorun

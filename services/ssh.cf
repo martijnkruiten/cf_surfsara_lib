@@ -21,10 +21,24 @@ bundle common ssh()
                 ');
 
         debian.!debian8::
-            "packages"  slist => { "openssh-client", "openssh-server", "openssh-blacklist" };
+            "packages"  data  => parsejson('
+                    {
+                        "openssh-client" : "",
+                        "openssh-server" : "",
+                        "openssh-blacklist" : ""
+                    }
+                ');
 
         debian_8::
-            "packages"  slist => { "openssh-client", "openssh-server", "openssh-blacklist", "libpam-systemd", "dbus" };
+            "packages"  data  => parsejson('
+                    {
+                        "dbus" : "",
+                        "libpam-systemd" : "",
+                        "openssh-client" : "",
+                        "openssh-server" : "",
+                        "openssh-blacklist" : ""
+                    }
+                ');
 
         debian::
             "service_name"      string => "ssh";      
@@ -32,7 +46,15 @@ bundle common ssh()
                 comment => "Used in ssh default.json";
 
         centos::
-            "packages"  slist => { "openssh", "openssh-clients", "openssh-server", "openssh-askpass", "openssh-ldap" };
+            "packages"  data  => parsejson('
+                    {
+                        "openssh" : "",
+                        "openssh-askpass" : "",
+                        "openssh-clients" : "",
+                        "openssh-ldap" : "",
+                        "openssh-server" : "",
+                    }
+                ');
             "service_name"      string => "sshd";      
             "sftp_server_path"  string => "/usr/libexec/openssh/sftp-server",
                 comment => "Used in ssh default.json";

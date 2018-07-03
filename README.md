@@ -1,4 +1,4 @@
-# SURFsara CFEngine library for mustache/json templates 
+# SURFsara CFEngine Library (SCL) for mustache/json templates 
 
 At SURFsara we have developed a general library to generate files from templates. In our setup we can easily
 specify the default values and override them in other json file(s) or via def.cf/json. The goal is to set
@@ -176,7 +176,12 @@ IF you definied your own `def.cf`and do want to use the one include in this fram
 ## cf-agent command line options
 
 The SURFsara CFEngine library also checks for some classes:
- * To test local mustache/json changes, the copy of the json/mustache file(s) from the policy server can be skipped by:
+ * To test with a local `templates` directory. This directory must be one level higher than your policy files directory (../templates):
+  * `-DTEMPLATE_LOCAL_COPY`: Copy from local directory the mustache and json file(s).
+  * `-DMUSTACHE_LOCAL_COPY`: Copy from local directory the mustache file(s)
+  * `-DJSON_LOCAL_COPY`: Copy from local directory the json file(s)
+ * To test local mustache/json changes in `$def.node_template_dir), the copy of the json/mustache file(s) from the policy server can be skipped by:
+  * `-DTEMPLATE_SKIP_COPY`: Skip copying of mustache and json files
   * `-DMUSTACHE_SKIP_COPY`:  Skip copying of the mustache files
   * `-DJSON_SKIP_COPY`: Skip copying of the json files
  * To debug the mustache setup: `-DDEBUG_MUSTACHE` (all service bundles)

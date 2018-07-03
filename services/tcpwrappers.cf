@@ -20,9 +20,17 @@ bundle common tcpwrappers()
                 ');
 
         centos::
-            "packages" slist => { "tcp_wrappers" };
+            "packages"  data  => parsejson('
+                    {
+                        "tcp_wrappers" : ""
+                    }
+                ');
         debian::
-            "packages" slist => { "tcpd" };
+            "packages"  data  => parsejson('
+                    {
+                        "tcpd" : ""
+                    }
+                ');
 }
 
 bundle agent tcpwrappers_autorun()
