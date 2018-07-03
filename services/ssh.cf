@@ -23,20 +23,24 @@ bundle common ssh()
         debian.!debian8::
             "packages"  data  => parsejson('
                     {
-                        "openssh-client" : "",
-                        "openssh-server" : "",
-                        "openssh-blacklist" : ""
+                        "install": {
+                            "openssh-client" : "",
+                            "openssh-server" : "",
+                            "openssh-blacklist" : ""
+                        }
                     }
                 ');
 
         debian_8::
             "packages"  data  => parsejson('
                     {
-                        "dbus" : "",
-                        "libpam-systemd" : "",
-                        "openssh-client" : "",
-                        "openssh-server" : "",
-                        "openssh-blacklist" : ""
+                        "install": {
+                            "dbus" : "",
+                            "libpam-systemd" : "",
+                            "openssh-client" : "",
+                            "openssh-server" : "",
+                            "openssh-blacklist" : ""
+                        }
                     }
                 ');
 
@@ -48,11 +52,13 @@ bundle common ssh()
         centos::
             "packages"  data  => parsejson('
                     {
-                        "openssh" : "",
-                        "openssh-askpass" : "",
-                        "openssh-clients" : "",
-                        "openssh-ldap" : "",
-                        "openssh-server" : "",
+                        "install": {
+                            "openssh" : "",
+                            "openssh-askpass" : "",
+                            "openssh-clients" : "",
+                            "openssh-ldap" : "",
+                            "openssh-server" : "",
+                        }
                     }
                 ');
             "service_name"      string => "sshd";      
@@ -111,7 +117,7 @@ bundle agent ssh_daemons_check()
 bundle agent ssh_install()
 {
     methods:
-	"" usebundle => sara_install_service_packages("ssh", "@(ssh.packages)");
+        "" usebundle => sara_service_packages("ssh", "@(ssh.packages)");
 }
 
 bundle agent ssh_surfsara_config()

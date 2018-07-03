@@ -13,7 +13,7 @@ bundle agent tripwire_autorun()
         any::
             "tripwire_files_set" expression => isvariable("def.tripwire_json_files"),
                 comment => "check this files";
-        
+
     methods:
         any::
             "merge" usebundle => sara_data_autorun("tripwire");
@@ -75,7 +75,7 @@ The variable must be ''tripwire_json_files'' and with this setup 1 extra json fi
 === Debug ===
 
 If you want to debug this bundle set the `DEBUG_tripwire` class, eg:
- * `-DDEBUG_tripwire,RUN` 
+ * `-DDEBUG_tripwire,RUN`
 
 === Setup ===
 
@@ -108,7 +108,9 @@ Same can also be set in `def.json`
 {{{
 #!json
     "vars": {
-        "tripwire_json_files": [ "apache.json" ],
+        "tripwire": {
+            "json_files": [ "apache.json" ]
+        }
     },
 }}}
 @endif

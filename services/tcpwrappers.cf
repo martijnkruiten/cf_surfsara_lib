@@ -22,13 +22,17 @@ bundle common tcpwrappers()
         centos::
             "packages"  data  => parsejson('
                     {
-                        "tcp_wrappers" : ""
+                        "install": {
+                            "tcp_wrappers" : ""
+                        }
                     }
                 ');
         debian::
             "packages"  data  => parsejson('
                     {
-                        "tcpd" : ""
+                        "install": {
+                            "tcpd" : ""
+                        }
                     }
                 ');
 }
@@ -57,7 +61,7 @@ bundle agent tcpwrappers_config()
 bundle agent tcpwrappers_install()
 {
     methods:
-        "" usebundle =>  sara_install_service_packages("tcpwrappers", "@(tcpwrappers.packages)");
+        "" usebundle =>  sara_service_packages("tcpwrappers", "@(tcpwrappers.packages)");
 }
 
 bundle agent tcpwrappers_surfsara_config()
@@ -194,8 +198,8 @@ vars:
 #!json
 "vars": {
     "tcpwrappers": {
-        "tcpwrappers_json_files" slist => { "allow_ssh.json", "allow_http.json" };
-    }  
+        "json_files": [ "allow_ssh.json", "allow_http.json" ]
+    } 
 }  
 }}}
  * override allow_ssh setting in def.cf:
@@ -208,6 +212,7 @@ vars:
 {{{
 #!json
     "tcpwrappers" : {
+        "json_files" : [ "allow_http.json" ],
         "allow_ssh": [
             { "allow": "10.101.32.0/255.255.255.0", "desc": "ALLOW admin lan" },
         ]

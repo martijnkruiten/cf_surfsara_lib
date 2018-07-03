@@ -8,10 +8,10 @@ For all bundles the mustache/json file(s) will be copied to the local node direc
  * The json and template file(s) are copied from the policy hub shortcut: `templates/$(bundle_name)`
  * The copies are placed in the local node directory: `$(def.node_template_dir)/$(bundle_name)`
  * The following json must always be present and will always be copied: *default.json*
- * Extra json file(s) can be specified in *def.cf/json*: `$(bundle_name)_json_files` 
+ * Extra json file(s) can be specified in *def.cf/json*: `$(bundle_name)[json_files]` 
  * Scripts can generate json file(s) on a host/node. The json file must be copied into: 
     * `$(def.node_template_dir)/$(bundle_name)`
-    * The generated file(s) are specified in def.cf/json: `$(bundle_name)_local_generated_json_files`
+    * The generated file(s) are specified in def.cf/json: `$(bundle_name)[local_generated_json_files]`
  * You can override values via *def.json*, Note: This one always wins.
  * CFengine variables are expanded. 
 
@@ -26,8 +26,8 @@ If the order is `{ "b.json", "a.json" }` the value of *a* would be *1*
 
 The merge strategy is::
   1. `default.json`
-  1. `def.<bundle_name>_json_files` if defined
-  1. `def.<bundle_name>_local_generated_json_files` if defined
+  1. `def.<bundle_name>[json_files]` if defined
+  1. `def.<bundle_name>[local_generated_json_files]` if defined
   1. `def.<bundle_name>` if defined in def.json or:
     * lib/surfsara/def.cf MPF setup
     * your own file with variable scope `def` 
@@ -82,7 +82,7 @@ You can test your installation with
  
 #### update ####
 
-You can run the same script it will detect that its an update `npf_installation`. This script will overwrite:
+You can run the same script it will detect that its an update `mpf_installation`. This script will overwrite:
  * surfsara library files: `masterfiles/lib/surfsara`
  * surfsara services files: `masterfiles/services/surfsara`
  * mustache template files and default.json files: `/var/cfengine/templates`
@@ -145,10 +145,12 @@ In this file you can override settings for the templates. When the json data is 
 }
 ```
 
-You can also specify a json setup file:
+You can also specify json setup files:
 ```
 "vars": {
-    "tcpwrapper_json_files": [ "allow_ssh.json", "allow_http.json" ]
+    "tcpwrapper": {
+        "json_files": [ "allow_ssh.json", "allow_http.json" ]
+    }
 }
 ```
 
@@ -164,8 +166,7 @@ vars:
  * json file:
   ```
 vars:
-    "tcpwrapper_json_files" slist =>  { "allow_ssh.json", "allow_http.json" };
-    "tripwire_json_files" slist =>  { "systemd.json" };
+    "tcpwrapper" data => parsejson( '{ "json_files": [ "allow_ssh.json", "allow_http.json" ] '} );
  ```
 
 

@@ -8,7 +8,9 @@ bundle common yum
             "repos_dir"     string => "/etc/yum.repos.d";
             "packages"  data  => parsejson('
                     {
-                        "yum-plugin-security" : ""
+                        "install": {
+                            "yum-plugin-security" : ""
+                        }
                     }
                 ');
 
@@ -70,7 +72,7 @@ bundle agent yum_autorun()
 bundle agent yum_install
 {
     methods:
-        "" usebundle => sara_install_service_packages("yum", "@(yum.packages)"); 
+        "" usebundle => sara_service_packages("yum", "@(yum.packages)"); 
 }
 
 bundle agent yum_surfsara_config

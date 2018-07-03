@@ -131,9 +131,9 @@ vars:
 {{{
 #!json
     "vars": {
-        "resolv_json_files": [
-            "search_mail.json"
-        ]
+        "resolv": {
+            "json_files": [ "search_mail.json" ]
+        }
     }
 }}}
 
