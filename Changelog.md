@@ -7,7 +7,7 @@
   * Can now set bundle classes based on a cfengine expression in the bundle json data, ala def.json, eg
 ```
 "dhclient": {
-  "classes": { 
+  "classes": {
      "RESOLV_CONF": "r24n2"
   }
 },
@@ -82,28 +82,28 @@ methods:
     "" usebundle => sara_services_autorun();
 ```
 
-## ssh changes 
+## ssh changes
    * Use the `sara_service_copy_files` bundle
 ```
  "ssh": {
     "copy_files": {
-        "ssh_host_dsa_key": { 
+        "ssh_host_dsa_key": {
             "dest": "$(ssh.config_dir)",
-            "source": "cf_bundles_dir/ssh/doornode", 
-            "mode": "0600", "owner": "root", "group": "root", 
+            "source": "cf_bundles_dir/ssh/doornode",
+            "mode": "0600", "owner": "root", "group": "root",
             "run_bundle": "ssh_daemon_restart" }
         ,
-        "ssh_host_dsa_key.pub": { 
+        "ssh_host_dsa_key.pub": {
             "dest": "$(ssh.config_dir)",
-            "source": "cf_bundles_dir/ssh/doornode", 
-            "mode": "0644", "owner": "root", "group": "root", 
-            "run_bundle": "ssh_daemon_restart" 
+            "source": "cf_bundles_dir/ssh/doornode",
+            "mode": "0644", "owner": "root", "group": "root",
+            "run_bundle": "ssh_daemon_restart"
         }
     }
 },
 ```
 
-   * Some ssh options are deprecated.  If you want to include this options in `sshd_config` you must set the class `SSH_USE_DEPRICATED_OPTIONS`, it is default enabled for debian_7 and centos. 
+   * Some ssh options are deprecated.  If you want to include this options in `sshd_config` you must set the class `SSH_USE_DEPRICATED_OPTIONS`, it is default enabled for debian_7 and centos.
 ```
 vars:
     "ssh" data => parsejson( '{ "classes": { "USE_DEPRICATED_OPTIONS" : "any" }  }' );
@@ -114,7 +114,7 @@ classes:
     "SSH_USE_DEPRICATED_OPTIONS" expression => "any";
 ```
 
-   * default ssh options added: 
+   * default ssh options added:
 ```
     "X11Forwarding": "yes",
     "X11UseLocalhost": "yes
@@ -153,4 +153,4 @@ classes:
   * postfix template can now handle: virtual\_mailbox\_limit  option (Lucas Slim, SURFsara)
   * library improvements, sara\_data\_autorun is inline with sara\_mustache\_autorun,. Simplified a lot of coce.
   * Added services.cf to library as alternative for autorun. All methods are protected by a class sercice name. (Dennis Stam, SURFsara)
- 
+
