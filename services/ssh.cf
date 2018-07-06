@@ -1,6 +1,6 @@
 bundle common ssh()
 {
-    vars: 
+    vars:
         any::
             "config_dir"  string => "/etc/ssh";
 
@@ -14,9 +14,9 @@ bundle common ssh()
             ## Mustache templates
             "template_2_destination" data => parsejson('
                     {
-                        "ssh.mustache"  : "$(client_file)", 
+                        "ssh.mustache"  : "$(client_file)",
                         "sshd.mustache" : "$(server_file)",
-                        "sshd_banner.mustache"  : "$(banner_file)", 
+                        "sshd_banner.mustache"  : "$(banner_file)",
                     }
                 ');
 
@@ -45,7 +45,7 @@ bundle common ssh()
                 ');
 
         debian::
-            "service_name"      string => "ssh";      
+            "service_name"      string => "ssh";
             "sftp_server_path"  string => "/usr/lib/openssh/sftp-server",
                 comment => "Used in ssh default.json";
 
@@ -61,7 +61,7 @@ bundle common ssh()
                         }
                     }
                 ');
-            "service_name"      string => "sshd";      
+            "service_name"      string => "sshd";
             "sftp_server_path"  string => "/usr/libexec/openssh/sftp-server",
                 comment => "Used in ssh default.json";
 
@@ -135,12 +135,12 @@ methods:
     any::
         "" usebundle => sara_mustache_autorun("ssh");
         "" usebundle => ssh_daemons_restart(),
-            ifvarclass => or( 
+            ifvarclass => or(
                 canonify("sara$(ssh.server_file)")
                 );
 
     ssh_copy_files_set::
-        "" usebundle => ssh_copy_files();
+        "" usebundle => sara_service_copy_files("ssh");
 
 files:
     any::
@@ -159,60 +159,11 @@ files:
             link_from       => ln_s("/usr/bin/ssh"),
             move_obstructions => "true";
 }
-
-bundle agent ssh_copy_files()
-{
-vars:
-    any::
-        "files" slist => getindices("sara_data.ssh[copy_files]");
-
-        "files_str" string => format("%S", "sara_data.ssh[copy_files]"),
-            ifvarclass => "DEBUG|DEBUG_ssh|DEBUG_$(this.bundle)";
-
-classes:
-    any::
-        "ssh_restart_$(files)_class" expression => strcmp("$(sara_data.ssh[copy_files][$(files)][restart])", "yes"),
-            comment => "Must ssh daemon be restart if this files get copied";
-
-files:
-    any::
-        "$(ssh.config_dir)/$(files)"
-            comment => "Copy ssh files and set class if its get copied",
-            copy_from => secure_cp("$(sara_data.ssh[copy_files][$(files)][source])/$(files)", "$(sys.policy_hub)"),
-            classes => results("namespace", "ssh_copy_files_$(files)");
-
-        "$(ssh.config_dir)/$(files)"
-            comment => "Check permission",
-            perms => mog( "$(sara_data.ssh[copy_files][$(files)][mode])", "$(sara_data.ssh[copy_files][$(files)][owner])",
-                "$(sara_data.ssh[copy_files][$(files)][group])");
-
-methods:
-    any::
-        "" usebundle => ssh_daemons_restart(),
-            comment => "Restart ssh daemon if 'restart': 'yes' is set and file hash been copied",
-            ifvarclass => and(
-                canonify("ssh_copy_files_$(files)_repaired"),
-                canonify("ssh_restart_$(files)_class")
-                );
-
-reports:
-    any::
-        "$(files) has been copied, so restart ssh daemon"
-            ifvarclass => and(
-                canonify("ssh_copy_files_$(files)_repaired"),
-                canonify("ssh_restart_$(files)_class"),
-                "DEBUG|DEBUG_ssh|DEBUG_$(this.bundle)"
-                );
-
-        "$(this.bundle): $(files_str)"
-            ifvarclass => "DEBUG|DEBUG_ssh|DEBUG_$(this.bundle)";
-}
-
 @if minimum_version(99.9)
 
 = SSH =
 
-This bundle installs ssh software on a node. 
+This bundle installs ssh software on a node.
 
 This bundle will generate these files from mustache templates:
  * /etc//ssh/ssh.conf
@@ -248,86 +199,86 @@ The variable must be ''ssh_json_files'' and with this setup 1 extra json file wi
 === DEBUG ===
 
 if you want to debug this bundle set the `DEBUG_ssh` class, eg:
- * `DDEBUG_ssh` 
+ * `DDEBUG_ssh`
 
 == Setup ==
 The variables are set in default.json and can be overwritten.
 {{{
 #!json
 {
-    "AddressFamily": "any",  
-    "AllowTcpForwarding": "yes",  
-    "authorized_keys_command" : "/opt/ssh-ldap-pubkey/bin/ssh-ldap-pubkey-wrapper",  
-    "authorized_keys_commanduser" :  "nobody",  
-    "AuthorizedKeysFile": "%h/.ssh/authorized_keys",  
-    "Banner": "none",  
-    "Banner_system": "SURFsara",  
-    "Banner_system_url": "http://www.surfsara.nl",  
-    "ChallengeResponseAuthentication": "no",  
+    "AddressFamily": "any",
+    "AllowTcpForwarding": "yes",
+    "authorized_keys_command" : "/opt/ssh-ldap-pubkey/bin/ssh-ldap-pubkey-wrapper",
+    "authorized_keys_commanduser" :  "nobody",
+    "AuthorizedKeysFile": "%h/.ssh/authorized_keys",
+    "Banner": "none",
+    "Banner_system": "SURFsara",
+    "Banner_system_url": "http://www.surfsara.nl",
+    "ChallengeResponseAuthentication": "no",
     "copy_files": {},
-    "HostbasedAuthentication": "yes",  
-    "HostKey": [  
-        { "key" : "/etc/ssh/ssh_host_rsa_key" },  
-        { "key" : "/etc/ssh/ssh_host_dsa_key" }  
-    ],  
-    "IgnoreRhosts": "yes",  
-    "IgnoreUserKnownHosts": "no",  
-    "KeyRegenerationInterval": "3600",  
-    "ListenAddress": [  
-        { "address": "::" },  
-        { "address": "0.0.0.0" }  
-    ],  
-    "LoginGraceTime": "120",  
-    "LogLevel": "INFO",  
-    "matches" : [  
-        { "match" : "match Address $(sys.policy_hub)", "settings" : [  
-            "PermitRootLogin yes"  
-            ]  
-        }  
-    ],  
-    "matches_client" : [  
-        { "match" : "Host localhost", "settings" : [  
-            "ForwardAgent yes",  
-            "ForwardX11 yes"  
-            ]  
-        },  
-        { "match" : "Host *", "settings" : [  
-            "GSSAPIAuthentication yes",  
-            "GSSAPIDelegateCredentials no",  
-            "HashKnownHosts yes",  
-            "HostbasedAuthentication no",  
-            "ForwardAgent no",  
-            "ForwardX11 no",  
-            "SendEnv LANG LC_*"  
-            ]  
-        }  
-    ],  
-    "MaxAuthTries": "6",  
-    "MaxSessions": "10",  
-    "PasswordAuthentication": "yes",  
-    "permit_root": [],  
-    "PermitEmptyPasswords": "no",  
-    "PermitRootLogin": "no",  
-    "Port": "22",  
-    "PrintLastLog": "yes",  
-    "PrintMotd": "no",  
-    "Protocol": "2",  
-    "PubkeyAuthentication": "yes",  
-    "RhostsRSAAuthentication": "yes",  
-    "RSAAuthentication": "yes",  
-    "ServerKeyBits": "768",  
-    "StrictModes": "yes",  
-    "Subsystem": [  
-        { "service" : "sftp" , "path" : "$(ssh.sftp_server_path)" }  
-    ],  
-    "SyslogFacility": "AUTH",  
-    "TCPKeepAlive": "yes",  
-    "UseDNS": "no" ,  
-    "UseLogin": "no" ,  
-    "UsePAM": "yes" ,  
-    "UsePrivilegeSeparation": "yes" ,  
-    "X11DisplayOffset": "10" ,  
-    "X11Forwarding": "yes"  
+    "HostbasedAuthentication": "yes",
+    "HostKey": [
+        { "key" : "/etc/ssh/ssh_host_rsa_key" },
+        { "key" : "/etc/ssh/ssh_host_dsa_key" }
+    ],
+    "IgnoreRhosts": "yes",
+    "IgnoreUserKnownHosts": "no",
+    "KeyRegenerationInterval": "3600",
+    "ListenAddress": [
+        { "address": "::" },
+        { "address": "0.0.0.0" }
+    ],
+    "LoginGraceTime": "120",
+    "LogLevel": "INFO",
+    "matches" : [
+        { "match" : "match Address $(sys.policy_hub)", "settings" : [
+            "PermitRootLogin yes"
+            ]
+        }
+    ],
+    "matches_client" : [
+        { "match" : "Host localhost", "settings" : [
+            "ForwardAgent yes",
+            "ForwardX11 yes"
+            ]
+        },
+        { "match" : "Host *", "settings" : [
+            "GSSAPIAuthentication yes",
+            "GSSAPIDelegateCredentials no",
+            "HashKnownHosts yes",
+            "HostbasedAuthentication no",
+            "ForwardAgent no",
+            "ForwardX11 no",
+            "SendEnv LANG LC_*"
+            ]
+        }
+    ],
+    "MaxAuthTries": "6",
+    "MaxSessions": "10",
+    "PasswordAuthentication": "yes",
+    "permit_root": [],
+    "PermitEmptyPasswords": "no",
+    "PermitRootLogin": "no",
+    "Port": "22",
+    "PrintLastLog": "yes",
+    "PrintMotd": "no",
+    "Protocol": "2",
+    "PubkeyAuthentication": "yes",
+    "RhostsRSAAuthentication": "yes",
+    "RSAAuthentication": "yes",
+    "ServerKeyBits": "768",
+    "StrictModes": "yes",
+    "Subsystem": [
+        { "service" : "sftp" , "path" : "$(ssh.sftp_server_path)" }
+    ],
+    "SyslogFacility": "AUTH",
+    "TCPKeepAlive": "yes",
+    "UseDNS": "no" ,
+    "UseLogin": "no" ,
+    "UsePAM": "yes" ,
+    "UsePrivilegeSeparation": "yes" ,
+    "X11DisplayOffset": "10" ,
+    "X11Forwarding": "yes"
 }
 }}}
 
@@ -338,11 +289,12 @@ following format:
 {{{
 #!json
 "filename": {
-    "source": "The full path of the file on the policy server",
+    "dest": "The directory on the host",
+    "source": "The directory on the policy server/cf-hub",
     "mode":  "The mode bits",
     "owner": "File owner",
     "group": "File group",
-    "restart": "Must we restart the ssh daemon (yes|no)"
+    "run_bundle": "This bundle will run if the file gets copied"
 }
 }}}
 
@@ -350,8 +302,17 @@ example:
 {{{
 #!json
 "copy_files": {
-    "shosts.equiv": { "source": "cf_bundles_dir/ssh/lisa", "mode": "0644", "owner": "root", "group": "root", "restart": "no" },
-    "ssh_known_hosts2": { "source": "cf_bundles_dir/ssh/lisa", "mode": "0644", "owner": "root", "group": "root", "restart": "yes" }
+    "shosts.equiv": {
+        "dest": "$(ssh.config_dir)",
+        "source": "cf_bundles_dir/ssh/lisa",
+        "mode": "0644", "owner": "root", "group": "root",
+    },
+    "ssh_known_hosts2": {
+        "dest": "$(ssh.config_dir)",
+        "source": "cf_bundles_dir/ssh/lisa",
+        "mode": "0644", "owner": "root", "group": "root",
+        "run_bundle": "ssh_daemons_restart"
+    }
 }
 }}}
 
@@ -373,7 +334,7 @@ Here are some examples how to use it:
 #!cf3
 vars:
     "ssh_json_files" slist => { "policy_server.json" };
-}}} 
+}}}
  * Set/Override the daemon options variable in ''def.json'':
 {{{
 #!json
@@ -387,6 +348,6 @@ vars:
 #!cf3
 vars:
     "ssh" data => parsejson( '{ "X11Forwarding":  "no"  }' );
-}}} 
+}}}
 
 @endif
