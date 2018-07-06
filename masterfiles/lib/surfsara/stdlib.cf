@@ -17,11 +17,13 @@ bundle common surfsara_stdlib_common
         any::
             "standard" slist => {
                 "$(this.promise_dirname)/bundles.cf",
+                "$(this.promise_dirname)/files.cf",
                 "$(this.promise_dirname)/processes.cf",
+                "$(this.promise_dirname)/packages.cf",
                 "$(this.promise_dirname)/services.cf",
             };
 
-            "version" string => "SURFSARA Library 1.0.0"; 
+            "version" string => "SURFSARA Library 1.0.0";
 
         SURFSARA_SKIP_DEF_CF_INCLUDE::
             "def" slist => { };
@@ -37,6 +39,6 @@ body file control
 {
     inputs => {
         @(surfsara_stdlib_common.standard),
-        @(surfsara_stdlib_common.def) 
+        @(surfsara_stdlib_common.def)
     };
 }

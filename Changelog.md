@@ -13,8 +13,9 @@
 },
 ```
   * Service packages defined in the bundle can now be overridden by 'def.json'. The values can be `install/remove/purge`.
+  * Implemented `copy_files` json for services, see `ssh` changes. bundle name: `sara_service_copy_files`
 
-## pervice packages override options
+## service packages override options
 
 The following example will install any version of `openssh-client` and the latest version of `openssh-blacklist`.
 ```
@@ -75,19 +76,29 @@ The default setting for `sara_services_dir` is `services/surfsara`.  If you copi
 surfsara services files to another location you must set the `def.sara_services_dir`
 variable.
 
-In your framework call the following bundle and see above for `def.json` config:
+In your framework call the following bundle and see above for `def.json` example:
 ```
 methods:
     "" usebundle => sara_services_autorun();
 ```
 
 ## ssh changes 
-   * added a new json attribute for ssh bundle. `copy_files`
+   * Use the `sara_service_copy_files` bundle
 ```
  "ssh": {
     "copy_files": {
-        "ssh_host_dsa_key": { "source": "cf_bundles_dir/ssh/doornode", "mode": "0600", "owner": "root", "group": "root", "restart": "yes" },
-        "ssh_host_dsa_key.pub": { "source": "cf_bundles_dir/ssh/doornode", "mode": "0644", "owner": "root", "group": "root", "restart": "yes" }
+        "ssh_host_dsa_key": { 
+            "dest": "$(ssh.config_dir)",
+            "source": "cf_bundles_dir/ssh/doornode", 
+            "mode": "0600", "owner": "root", "group": "root", 
+            "run_bundle": "ssh_daemon_restart" }
+        ,
+        "ssh_host_dsa_key.pub": { 
+            "dest": "$(ssh.config_dir)",
+            "source": "cf_bundles_dir/ssh/doornode", 
+            "mode": "0644", "owner": "root", "group": "root", 
+            "run_bundle": "ssh_daemon_restart" 
+        }
     }
 },
 ```
