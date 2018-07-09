@@ -1,3 +1,6 @@
+#
+## check_space.cf @SURFsara
+#
 bundle agent check_space_autorun()
 {
     meta:

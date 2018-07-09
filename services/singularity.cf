@@ -1,3 +1,6 @@
+#
+## singularity.cf @SURFsara
+#
 bundle common singularity
 {
     vars:
@@ -8,7 +11,7 @@ bundle common singularity
 
             "template_2_destination" data => parsejson('
                     {
-                        "singularity.mustache" : "$(config_file)", 
+                        "singularity.mustache" : "$(config_file)",
                     }
                 ');
 
@@ -61,7 +64,7 @@ bundle agent singularity_config()
     methods:
         any::
             "" usebundle => sara_mustache_autorun("singularity");
-            
+
     reports:
         any::
             "$(singularity.config_file) config file has been updated"
@@ -104,7 +107,7 @@ The variable must be ''singularity_json_files'' and with this setup 1 extra json
 === DEBUG ===
 
 if you want to debug this bundle set the `DEBUG_singularity` class, eg:
- * `DDEBUG_singularity,RUN` 
+ * `DDEBUG_singularity,RUN`
 
 === Setup ===
 The variables that are set in default.json and can be overwritten.
@@ -147,7 +150,7 @@ Here are some examples how to use it:
 #!cf3
 vars:
     "singularity_json_files" slist => { "disable_overlay.json" };
-}}} 
+}}}
  * Set/Override the daemon options variable in ''def.json'':
 {{{
 #!json
@@ -161,6 +164,6 @@ vars:
 #!cf3
 vars:
     "singularity" data => parsejson( '{ "enable_overlay":  "no"  }' );
-}}} 
+}}}
 
 @endif

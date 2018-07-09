@@ -87,15 +87,15 @@ methods:
 ```
  "ssh": {
     "copy_files": {
-        "ssh_host_dsa_key": {
-            "dest": "$(ssh.config_dir)",
-            "source": "cf_bundles_dir/ssh/doornode",
+        {
+            "dest": "$(ssh.config_dir)/ssh_host_dsa_key",
+            "src": "cf_bundles_dir/ssh/doornode/ssh_host_dsa_key",
             "mode": "0600", "owner": "root", "group": "root",
             "run_bundle": "ssh_daemon_restart" }
         ,
-        "ssh_host_dsa_key.pub": {
-            "dest": "$(ssh.config_dir)",
-            "source": "cf_bundles_dir/ssh/doornode",
+        {
+            "dest": "$(ssh.config_dir)/ssh_host_dsa_key.pub",
+            "src": "cf_bundles_dir/ssh/doornode/ssh_host_dsa_key.pub",
             "mode": "0644", "owner": "root", "group": "root",
             "run_bundle": "ssh_daemon_restart"
         }

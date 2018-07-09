@@ -1,54 +1,54 @@
 #
-#  SURFsara files.cf
+## files.cf @SURFsara
 #
 bundle agent sara_service_copy_files(bundle_name)
 {
 vars:
     any::
-        "files" slist => getindices("sara_data.$(bundle_name)[copy_files]");
+        "index" slist => getindices("sara_data.$(bundle_name)[copy_files]");
 
     cfengine_3_7|cfengine_3_10::
-        "files_str" string => format("%S", "sara_data.$(bundle_name)[copy_files]"),
+        "debug_str" string => format("%S", "sara_data.$(bundle_name)[copy_files]"),
             comment => "Old debug method",
             ifvarclass => "DEBUG|DEBUG_$(bundle_name)|DEBUG_$(this.bundle)";
 
 classes:
     any::
-        "$(bundle_name)_copy_files_$(files)_restart" expression => isvariable("sara_data.$(bundle_name)[copy_files][$(files)][run_bundle]"),
+        "$(bundle_name)_copy_files_$(index)_run_bundle" expression => isvariable("sara_data.$(bundle_name)[copy_files][$(index)][run_bundle]"),
             comment => "Must we run a bundle when a file is copied";
 
 files:
     any::
-        "$(sara_data.$(bundle_name)[copy_files][$(files)][dest])/$(files)"
+        "$(sara_data.$(bundle_name)[copy_files][$(index)][dest])"
             comment => "Copy bundle files and set class if its get copied",
-            copy_from => secure_cp("$(sara_data.$(bundle_name)[copy_files][$(files)][source])/$(files)", "$(sys.policy_hub)"),
-            classes => results("namespace", "$(bundle_name)_copy_files_$(files)");
+            copy_from => secure_cp("$(sara_data.$(bundle_name)[copy_files][$(index)][src])", "$(sys.policy_hub)"),
+            classes => results("namespace", "$(bundle_name)_copy_files_$(index)");
 
-        "$(sara_data.$(bundle_name)[copy_files][$(files)][dest])/$(files)"
+        "$(sara_data.$(bundle_name)[copy_files][$(files)][dest])"
             comment => "Check permission",
-            perms => mog( "$(sara_data.$(bundle_name)[copy_files][$(files)][mode])",
-                "$(sara_data.$(bundle_name)[copy_files][$(files)][owner])",
-                "$(sara_data.$(bundle_name)[copy_files][$(files)][group])");
+            perms => mog( "$(sara_data.$(bundle_name)[copy_files][$(index)][mode])",
+                "$(sara_data.$(bundle_name)[copy_files][$(index)][owner])",
+                "$(sara_data.$(bundle_name)[copy_files][$(index)][group])");
 
 methods:
     any::
-        "" usebundle => "$(sara_data.$(bundle_name)[copy_files][$(files)][run_bundle])",
+        "" usebundle => "$(sara_data.$(bundle_name)[copy_files][$(index)][run_bundle])",
             ifvarclass => and(
-                canonify("$(bundle_name)_copy_files_$(files)_repaired"),
-                canonify("$(bundle_name)_copy_files_$(files)_restart")
+                canonify("$(bundle_name)_copy_files_$(index)_repaired"),
+                canonify("$(bundle_name)_copy_files_$(index)_run_bundle")
                 );
 
 reports:
 @if minimum_version(3.11)
     any::
-        "$(this.bundle):$(bundle_name):$(files)
+        "$(this.bundle):$(bundle_name):$(index)
             $(with)"
             comment => "Display the copy_files template data",
-            with => string_mustache("{{$-top-}}", data_expand("sara_data.$(bundle_name)[copy_files][$(files)]")),
+            with => string_mustache("{{$-top-}}", data_expand("sara_data.$(bundle_name)[copy_files][$(index)]")),
             ifvarclass => "DEBGU|DEBUG_$(bundle_name)|DEBUG_$(this.bundle)";
 @endif
     cfengine_3_7|cfengine_3_10::
-        "$(this.bundle):$(bundle_name):$(files)"
+        "$(this.bundle):$(bundle_name):$(debug_str)"
             ifvarclass => "DEBUG|DEBUG_$(bundle_name)|DEBUG_$(this.bundle)";
 
 }

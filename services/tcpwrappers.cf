@@ -1,14 +1,17 @@
+#
+## tcpwrappers.cf @SURFsara
+#
 bundle common tcpwrappers()
 {
     vars:
 
-        any:: 
-            "config_dir"            string => "/etc"; 
+        any::
+            "config_dir"            string => "/etc";
             "allow"                 string => "$(config_dir)/hosts.allow";
             "deny"                  string => "$(config_dir)/hosts.deny";
-            "owner"                 string => "root"; 
-            "group"                 string => "root"; 
-            "mode"                  string => "0444"; 
+            "owner"                 string => "root";
+            "group"                 string => "root";
+            "mode"                  string => "0444";
 
 
             ## Mustache templates
@@ -181,10 +184,10 @@ These variables can be used in the json files:
 We have define these default json files:
  * default.json : Is always included and 'localhost' is allowed.
  * allow.json : Everything is allowed
- * allow_ssh.json: SSH is allowed from everywhere 
- * allow_http.json: HTTP/HTTPS is allowed from everywhere 
+ * allow_ssh.json: SSH is allowed from everywhere
+ * allow_http.json: HTTP/HTTPS is allowed from everywhere
 
-== Def usage == 
+== Def usage ==
 
 Here are some examples how to use it
  * specify tcpwrappers configuration in def.cf:
@@ -199,8 +202,8 @@ vars:
 "vars": {
     "tcpwrappers": {
         "json_files": [ "allow_ssh.json", "allow_http.json" ]
-    } 
-}  
+    }
+}
 }}}
  * override allow_ssh setting in def.cf:
 {{{

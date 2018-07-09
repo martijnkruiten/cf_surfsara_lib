@@ -1,3 +1,6 @@
+#
+## ssh.cf  @SURFsara
+#
 bundle common ssh()
 {
     vars:
@@ -215,7 +218,7 @@ The variables are set in default.json and can be overwritten.
     "Banner_system": "SURFsara",
     "Banner_system_url": "http://www.surfsara.nl",
     "ChallengeResponseAuthentication": "no",
-    "copy_files": {},
+    "copy_files": [],
     "HostbasedAuthentication": "yes",
     "HostKey": [
         { "key" : "/etc/ssh/ssh_host_rsa_key" },
@@ -288,28 +291,30 @@ When this variable is set it will coyy the specified file to the `ssh.config_dir
 following format:
 {{{
 #!json
-"filename": {
-    "dest": "The directory on the host",
-    "source": "The directory on the policy server/cf-hub",
+"": [
+{
+    "dest": "Destination path with filename",
+    "src": "The filename path on the policy server/cf-hub",
     "mode":  "The mode bits",
     "owner": "File owner",
     "group": "File group",
     "run_bundle": "This bundle will run if the file gets copied"
 }
+]
 }}}
 
 example:
 {{{
 #!json
-"copy_files": {
-    "shosts.equiv": {
-        "dest": "$(ssh.config_dir)",
-        "source": "cf_bundles_dir/ssh/lisa",
+"copy_files": [
+    {
+        "dest": "$(ssh.config_dir)/shosts.equiv",
+        "src": "cf_bundles_dir/ssh/lisa/shosts.equiv",
         "mode": "0644", "owner": "root", "group": "root",
     },
-    "ssh_known_hosts2": {
-        "dest": "$(ssh.config_dir)",
-        "source": "cf_bundles_dir/ssh/lisa",
+    {
+        "dest": "$(ssh.config_dir)/ssh_known_hosts2",
+        "src": "cf_bundles_dir/ssh/lisa/ssh_known_hosts2",
         "mode": "0644", "owner": "root", "group": "root",
         "run_bundle": "ssh_daemons_restart"
     }

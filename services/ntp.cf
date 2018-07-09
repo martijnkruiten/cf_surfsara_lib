@@ -1,11 +1,14 @@
+#
+## ntp.cf @SURFsara
+#
 bundle common ntp {
     vars:
         any::
             "template_2_destination" data => parsejson('
                     {
-                        "ntp.mustache" : "$(config_file)", 
-                        "ntp_default.mustache" : "$(ntp_default)", 
-                        "ntpdate_default.mustache" : "$(ntpdate_default)", 
+                        "ntp.mustache" : "$(config_file)",
+                        "ntp_default.mustache" : "$(ntp_default)",
+                        "ntpdate_default.mustache" : "$(ntpdate_default)",
                     }
                 ');
 
@@ -28,6 +31,7 @@ bundle common ntp {
                     }
                 ');
             "service_name"      string => "ntpd";
+
         debian::
             "daemon_name"       string => "ntpd";
             "config_file"       string => "/etc/ntp.conf";
@@ -62,20 +66,20 @@ bundle agent ntp_autorun()
 }
 
 bundle agent ntp_install()
-{           
+{
     methods:
         "" usebundle => sara_service_packages("ntp", "@(ntp.packages)");
 }
 
 bundle agent ntp_surfsara_config()
 {
-    vars: 
+    vars:
         "ntp_default_file_class" string => canonify("sara$(ntp.ntp_default)");
         "ntp_config_file_class" string => canonify("sara$(ntp.config_file)");
 
 
     classes:
-        "NTP_RESTART" or => { 
+        "NTP_RESTART" or => {
             "$(ntp_default_file_class)",
             "$(ntp_config_file_class)",
         };
@@ -94,7 +98,7 @@ bundle agent ntp_surfsara_config()
             "" usebundle => sara_mustache_autorun("ntp");
         NTP_RESTART::
             "" usebundle => ntp_daemons_restart();
-        
+
 
 }
 
@@ -106,31 +110,31 @@ bundle agent ntp_daemons_check()
                 comment         => "Check if ntpd is running",
                 process_count   => check_range("$(ntp.daemon_name)", "1", "1"),
                 process_select  => sara_select_parent_process("1");
-                
-    methods:    
-        any::   
+
+    methods:
+        any::
             "ntp" usebundle => ntp_daemons_restart(),
                 ifvarclass => canonify("$(ntp.daemon_name)_out_of_range");
-} 
+}
 
 bundle agent ntp_daemons_restart()
 {
     commands:
         debian|centos::
             "$(ntp.restart)";
-            
+
     reports:
         any::
             "ntp daemons has been restarted $(ntp.restart)";
 }
 
-@if minimum_version(99.9)  
-= NTP =  
-  
-This bundle will generate these files from mustache templates:  
- * /etc/ntp.conf  
- * /etc/default/ntpdate (debian), /etc/sysconfig/ntpdate (centos)  
- * /etc/default/ntp (debian), /etc/sysconfig/ntpd (centos)  
+@if minimum_version(99.9)
+= NTP =
+
+This bundle will generate these files from mustache templates:
+ * /etc/ntp.conf
+ * /etc/default/ntpdate (debian), /etc/sysconfig/ntpdate (centos)
+ * /etc/default/ntp (debian), /etc/sysconfig/ntpd (centos)
 
 f one of the files is changed then the followong ''class'' will be set:
  * sara_etc_ntp_conf
@@ -142,66 +146,66 @@ the templates are located in:
  * templates/ntp/
  * templates/ntp/json
 
-== Usage ==  
-  
-The bundle is called with:  
- * `"ntp" usebundle => ntp_autorun()`  
+== Usage ==
+
+The bundle is called with:
+ * `"ntp" usebundle => ntp_autorun()`
 
 
-  
-When we do not specifiy any json data files then only `default.json` will be  
-read. You can specify extra json data file via:  
- * def.cf  
-{{{  
-#!cf3  
-    debian::  
-        "ntp_json_files" slist => { "debian.json" };  
-}}}  
-  
-The variable must be ''ntp_json_files'' and with this setup 1 extra json file will be  merged.  
-  
-=== Debug ===  
-  
-If you want to debug these bundle set the `DEBUG_nto` class, eg:  
+
+When we do not specifiy any json data files then only `default.json` will be
+read. You can specify extra json data file via:
+ * def.cf
+{{{
+#!cf3
+    debian::
+        "ntp_json_files" slist => { "debian.json" };
+}}}
+
+The variable must be ''ntp_json_files'' and with this setup 1 extra json file will be  merged.
+
+=== Debug ===
+
+If you want to debug these bundle set the `DEBUG_nto` class, eg:
  * `-DDEBUG_ntp
-  
-  
-=== Setup ===  
+
+
+=== Setup ===
 The variables that are set in default.json and can be overwritten. SURFSARA use other defaults.
-{{{  
-#!json  
-    "daemon_options": "",  
-    "restrict": [  
-        { "rule" : "127.0.0.1 nomodify", "desc" : "Local users may interrogate the ntp server more closely" },  
-        { "rule" : "-6 ::1 nomodify", "desc" : "Local users may interrogate the ntp server more closely" }  
-    ],  
-    "server": [  
+{{{
+#!json
+    "daemon_options": "",
+    "restrict": [
+        { "rule" : "127.0.0.1 nomodify", "desc" : "Local users may interrogate the ntp server more closely" },
+        { "rule" : "-6 ::1 nomodify", "desc" : "Local users may interrogate the ntp server more closely" }
+    ],
+    "server": [
         "0.nl.pool.ntp.org",
         "1.de.pool.ntp.org"
-    ]  
-}}}  
-  
-=== Def usage  ===  
-  
-Here are some examples how to use it:  
- * specify ntp configuration in def.cf:  
-{{{  
-#!cf3  
-vars:  
-    "ntp_json_files" slist => { "debian.json" };  
-}}}  
- * Set/Override the daemon options variable in ''def.json'':  
-{{{  
-#!json  
+    ]
+}}}
+
+=== Def usage  ===
+
+Here are some examples how to use it:
+ * specify ntp configuration in def.cf:
+{{{
+#!cf3
+vars:
+    "ntp_json_files" slist => { "debian.json" };
+}}}
+ * Set/Override the daemon options variable in ''def.json'':
+{{{
+#!json
         "ntp" : {
             "json_files": [ "debian.json" ],
-            "daemon_options": "-g"  
-        },  
-}}}  
- * override server setting in def.cf  
-{{{  
-#!cf3  
-vars:  
-    "ntp" data => parsejson( '{ "server" : [ "ntp_test.surfsara.nl" ] }' );  
-}}}  
-@endif  
+            "daemon_options": "-g"
+        },
+}}}
+ * override server setting in def.cf
+{{{
+#!cf3
+vars:
+    "ntp" data => parsejson( '{ "server" : [ "ntp_test.surfsara.nl" ] }' );
+}}}
+@endif

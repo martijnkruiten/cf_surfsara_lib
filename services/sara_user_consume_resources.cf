@@ -1,3 +1,6 @@
+#
+## postfix.cf @SURFsara
+#
 bundle common sara_user_consume_resources
 {
 }

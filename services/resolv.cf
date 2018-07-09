@@ -1,8 +1,6 @@
-#################################################
 #
-# SVN info:
-#       $Id: resolv.cf 23776 2017-08-04 13:47:27Z bas $
-
+## resolv.cf @SURFsara
+#
 bundle common resolv
 {
     vars:

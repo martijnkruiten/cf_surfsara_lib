@@ -1,3 +1,6 @@
+#
+## yum.cf  @SURFsara
+#
 bundle common yum
 {
     vars:
@@ -72,7 +75,7 @@ bundle agent yum_autorun()
 bundle agent yum_install
 {
     methods:
-        "" usebundle => sara_service_packages("yum", "@(yum.packages)"); 
+        "" usebundle => sara_service_packages("yum", "@(yum.packages)");
 }
 
 bundle agent yum_surfsara_config
@@ -205,18 +208,18 @@ The following class must be set in the specific ''def.json'' hostfile:
     },`
 }}}
 
-With yum you can specify 2 different type of lists for external json data: 
- 1. yum_json_files --> yum.conf 
+With yum you can specify 2 different type of lists for external json data:
+ 1. yum_json_files --> yum.conf
  1. yum_repository_json_files --> yum repo files
 
-Here are some examples how to use it. 
+Here are some examples how to use it.
  * add an extra repo:
   * def.cf
 {{{
 #!cf3
     any::
         "yum_repository_files" slist => { "epel.json" };
-}}} 
+}}}
     * def.json
 {{{
 #!json
@@ -230,7 +233,7 @@ Here are some examples how to use it.
 #!cf3
     vars:
         "yum" data => parsejson( '{ "assumeyes":  "0"  }' );
-}}} 
+}}}
   * def.json
 {{{
 #!json
@@ -238,5 +241,5 @@ Here are some examples how to use it.
         "yum": {
             "assumeyes":  "0"
         },
-}}} 
+}}}
 @endif

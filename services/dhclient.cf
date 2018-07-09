@@ -1,3 +1,6 @@
+#
+## dhclient.cf @SURFsara
+#
 bundle common dhclient
 {
     vars:
@@ -7,12 +10,12 @@ bundle common dhclient
                 "hooks.mustache": "$(hooks_filename)"
             }');
 
-        debian:: 
+        debian::
             "config_dir"        string => "/etc/dhcp";
             "enter_hooks_dir"   string => "$(config_dir)/dhclient-enter-hooks.d";
             "hooks_filename"    string => "$(enter_hooks_dir)/cfengine_generated";
 
-        centos:: 
+        centos::
             "config_dir"        string => "/etc/dhcp";
             "hooks_filename"    string => "$(config_dir)/dhclient-enter-hooks";
 }
@@ -26,7 +29,7 @@ bundle agent dhclient_autorun()
         any::
             "" usebundle => sara_data_autorun("dhclient");
             "" usebundle => dhclient_surfsara_config();
-        
+
 }
 
 bundle agent dhclient_surfsara_config
@@ -69,9 +72,9 @@ read. You can specify extra json data file via:
 vars:
     any::
         "dhclient_json_files" slist => { "override_resolv.json" };
-}}}     
+}}}
 
-The variable must be ''dhclient_json_files'' and with this setup 1 extra json file will be  merged. 
+The variable must be ''dhclient_json_files'' and with this setup 1 extra json file will be  merged.
 
 === DEBUG ===
 
@@ -89,7 +92,7 @@ f you want to debug this bundle set the `DEBUG_dhclient` class, eg:
             echo 'Disabled make_resolv_conf, maintained by CFengine (dhclient.cf)'
         }
 "
-}  
+}
 }}}
 
 === Def Usage ===
@@ -97,7 +100,7 @@ The following must be set in host specific host file: `def.json`
 {{{
 #!json
     "classes": {
-        "DHCLIENT_BUNDLE": "any", 
+        "DHCLIENT_BUNDLE": "any",
     },
     "vars": {
         "dhclient": {
@@ -113,7 +116,7 @@ In def.cf/def.json you can override the `resolv_conf` function, eg def.json:
 #!json
     "vars": {
         "dhclient": {
-            "resolv_conf": 
+            "resolv_conf":
 "
 make_resol_conf()
 {

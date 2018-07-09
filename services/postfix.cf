@@ -1,3 +1,6 @@
+#
+## postfix.cf @SURFsara
+#
 bundle common postfix() {
     vars:
         debian::
@@ -51,7 +54,7 @@ bundle common postfix() {
             "newaliases"        string => "/usr/bin/newaliases";
             "postmap_cmd"       string => "/usr/sbin/postmap";
             "config_dir"        string => "/etc/postfix/";
-        
+
             ## Mustache templates
             "template_2_destination" data => parsejson('
                 {
@@ -86,7 +89,7 @@ bundle agent postfix_autorun()
             ""  usebundle => postfix_surfsara_config();
             ""  usebundle => postfix_daemons_check();
 
-        POSTFIX_VIRTUAL_MAPS::        
+        POSTFIX_VIRTUAL_MAPS::
             "" usebundle => postfix_virtual_alias_maps();
 
 }
@@ -94,7 +97,7 @@ bundle agent postfix_autorun()
 bundle agent postfix_install()
 {
     methods:
-        "" usebundle => sara_service_packages("postfix", "@(postfix.packages)"); 
+        "" usebundle => sara_service_packages("postfix", "@(postfix.packages)");
 }
 
 bundle agent postfix_daemons_check
@@ -158,7 +161,7 @@ bundle agent postfix_virtual_alias_maps()
 
     methods:
         "" usebundle => sara_mustache_copy("postfix", "@(postfix_virtual_alias_maps.templates)");
-        
+
     files:
         "$(sara_data.postfix[virtual_alias_maps][$(templates)][dest])"
             create => "true",
@@ -219,7 +222,7 @@ read. You can specify extra json data file via:
 #!cf3
     any::
         "postfix_json_files" slist => { "zimbra.json" };
-}}} 
+}}}
 
 The variable must be ''postfix_json_files'' and with this setup 1 extra json file will be  merged.
 
@@ -300,8 +303,8 @@ The following must be set in the specific ''def.json'' hostfile
 #!json
     "classes": {
         "POSTFIX_BUNDLE": "any",
-    },  
-}}} 
+    },
+}}}
 
 Here are some examples how to use it:
  * specify postfix configuration in def.cf:
@@ -309,7 +312,7 @@ Here are some examples how to use it:
 #!cf3
 vars:
     "postfix_json_files" slist => { "zimbra.json" };
-}}} 
+}}}
  * Set/Override options variable in ''def.json'':
 {{{
 #!json
@@ -317,16 +320,16 @@ vars:
             "alias_root_email_address": "noreply@surfsara.nl",
             "json_files": [ "zimbra.json" ],
             "file_aliases_lines": [ {"name": "beowulf", "value": "|\"/usr/bin/run_email2trac --project beowulf\""} ]
-        },  
-}}}     
+        },
+}}}
  * override server setting in def.cf
 {{{
 #!cf3
 vars:
     "postfix" data => parsejson( '{ "alias_root_email_address":  "file_aliases_lines"  }' );
-}}} 
+}}}
 
- * to use `virtual_alias_map`s override following and define your own mustache file 
+ * to use `virtual_alias_map`s override following and define your own mustache file
 {{{
 #!json
     "virtual_alias_maps": [
@@ -377,6 +380,6 @@ vars:
 #!cf3
 vars:
     "postfix" data => parsejson( '{ "alias_root_email_address":  "file_aliases_lines"  }' );
-}}} 
+}}}
 
 @endif
