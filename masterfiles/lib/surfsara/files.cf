@@ -24,7 +24,7 @@ files:
             copy_from => secure_cp("$(sara_data.$(bundle_name)[copy_files][$(index)][src])", "$(sys.policy_hub)"),
             classes => results("namespace", "$(bundle_name)_copy_files_$(index)");
 
-        "$(sara_data.$(bundle_name)[copy_files][$(files)][dest])"
+        "$(sara_data.$(bundle_name)[copy_files][$(index)][dest])"
             comment => "Check permission",
             perms => mog( "$(sara_data.$(bundle_name)[copy_files][$(index)][mode])",
                 "$(sara_data.$(bundle_name)[copy_files][$(index)][owner])",
