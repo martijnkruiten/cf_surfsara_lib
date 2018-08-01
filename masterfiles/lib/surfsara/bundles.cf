@@ -332,7 +332,7 @@ bundle agent sara_mustache_autorun(bundle_name)
 }
 
 @if minimum_version(99.9)
-== bundle sara_mustache_copy(bundle_name) ==
+== bundle sara_mustache_copy(bundle_name, files) ==
 The bundle is internally and will take care of copying the template file(s) from the bundle data directory
 on the policy hub to a the local node directory. The bundle is called by:
  * sara_mustache_autorun
