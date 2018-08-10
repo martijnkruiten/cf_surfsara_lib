@@ -213,20 +213,23 @@ bundle agent sara_json_copy(bundle_name, files)
             "$(def.node_template_dir)/$(bundle_name)/$(files)"
                 comment     => "Let's copy the json files",
                 perms       => mog("0600", "root", "root"),
-                classes     => if_repaired("$(bundle_name)_json_copied"),
-                copy_from   => remote_dcp("$(bundle_json_dir)/$(files)", "$(sys.policy_hub)");
+                copy_from   => remote_dcp("$(bundle_json_dir)/$(files)", "$(sys.policy_hub)"),
+                classes     => results("bundle","$(bundle_name)$(files)");
 
         TEMPLATE_LOCAL_COPY|JSON_LOCAL_COPY::
             "$(def.node_template_dir)/$(bundle_name)/$(files)"
                 comment     => "Let's copy the json files",
                 perms       => mog("0600", "root", "root"),
-                classes     => if_repaired("$(bundle_name)_json_copied"),
-                copy_from   => local_cp("$(local_dir)/$(files)");
+                copy_from   => local_cp("$(local_dir)/$(files)"),
+                classes     => results("bundle","$(bundle_name)$(files)");
 
     reports:
         any::
             "$(this.bundle): $(bundle_name) json file(s) : $(files_str)"
                 ifvarclass => "DEBUG_$(bundle_name)|DEBUG|DEBUG_JSON|DEBUG_MUSTACHE";
+
+            "$(this.bundle):$(bundle_name):json file does not exists:$(files)"
+                ifvarclass => or( canonify("$(bundle_name)$(files)_failed") );
 
         TEMPLATE_SKIP_COPY|JSON_SKIP_COPY::
             "$(this.bundle): Skipped copying of json files";
