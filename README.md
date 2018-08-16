@@ -185,10 +185,10 @@ vars:
     "ntp" data => parsejson( '{ "server" : [ "<your_ip_server1>" ] }' );
 ```
  * json file:
-  ```
+```
 vars:
     "tcpwrapper" data => parsejson( '{ "json_files": [ "allow_ssh.json", "allow_http.json" ] '} );
- ```
+```
 
 
 IF you definied your own `def.cf`and do want to use the one include in this framework you can set the following class:
