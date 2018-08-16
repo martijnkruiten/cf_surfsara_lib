@@ -27,7 +27,9 @@ If the order is `{ "b.json", "a.json" }` the value of *a* would be *1*
 The merge strategy is::
   1. `default.json`
   1. `def.<bundle_name>[json_files]` if defined
+  1. `def.<bundle_name>_json_files` if defined
   1. `def.<bundle_name>[local_generated_json_files]` if defined
+  1. `def.<bundle_name>_local_generated_json_files` if defined
   1. `def.<bundle_name>` if defined in def.json or:
     * lib/surfsara/def.cf MPF setup
     * your own file with variable scope `def`
@@ -192,7 +194,7 @@ vars:
 ```
 
 
-IF you definied your own `def.cf`and do want to use the one include in this framework you can set the following class:
+If you defined your own `def.cf`and do want to use the one include in this framework you can set the following class:
  * `SURFSARA_SKIP_DEF_CF_INCLUDE`
 
 
@@ -203,7 +205,7 @@ The SURFsara CFEngine library also checks for some classes:
   * `-DTEMPLATE_LOCAL_COPY`: Copy from local directory the mustache and json file(s).
   * `-DMUSTACHE_LOCAL_COPY`: Copy from local directory the mustache file(s)
   * `-DJSON_LOCAL_COPY`: Copy from local directory the json file(s)
- * To test local mustache/json changes in `$def.node_template_dir), the copy of the json/mustache file(s) from the policy server can be skipped by:
+ * To test local mustache/json changes in `$(def.node_template_dir)`, the copy of the json/mustache file(s) from the policy server can be skipped by:
   * `-DTEMPLATE_SKIP_COPY`: Skip copying of mustache and json files
   * `-DMUSTACHE_SKIP_COPY`:  Skip copying of the mustache files
   * `-DJSON_SKIP_COPY`: Skip copying of the json files
