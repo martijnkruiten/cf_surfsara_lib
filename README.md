@@ -1,4 +1,4 @@
-# SURFsara CFEngine Library (SCL) for mustache/json templates 
+# SURFsara CFEngine Library (SCL) for mustache/json templates
 
 At SURFsara we have developed a general library to generate files from templates. In our setup we can easily
 specify the default values and override them in other json file(s) or via def.cf/json. The goal is to set
@@ -8,15 +8,15 @@ For all bundles the mustache/json file(s) will be copied to the local node direc
  * The json and template file(s) are copied from the policy hub shortcut: `templates/$(bundle_name)`
  * The copies are placed in the local node directory: `$(def.node_template_dir)/$(bundle_name)`
  * The following json must always be present and will always be copied: *default.json*
- * Extra json file(s) can be specified in *def.cf/json*: `$(bundle_name)[json_files]` 
- * Scripts can generate json file(s) on a host/node. The json file must be copied into: 
+ * Extra json file(s) can be specified in *def.cf/json*: `$(bundle_name)[json_files]`
+ * Scripts can generate json file(s) on a host/node. The json file must be copied into:
     * `$(def.node_template_dir)/$(bundle_name)`
     * The generated file(s) are specified in def.cf/json: `$(bundle_name)[local_generated_json_files]`
  * You can override values via *def.json*, Note: This one always wins.
- * CFengine variables are expanded. 
+ * CFengine variables are expanded.
 
-Both senarios will be described in the subsection below. For both senarios you can specifiy multiple 
-json files. The files will be merged and the last one wins if the same variable name is used,eg:  
+Both senarios will be described in the subsection below. For both senarios you can specifiy multiple
+json files. The files will be merged and the last one wins if the same variable name is used,eg:
  * a.json defines: `a : 1`
  * b.json defines: `a : 2`
 
@@ -30,9 +30,9 @@ The merge strategy is::
   1. `def.<bundle_name>[local_generated_json_files]` if defined
   1. `def.<bundle_name>` if defined in def.json or:
     * lib/surfsara/def.cf MPF setup
-    * your own file with variable scope `def` 
+    * your own file with variable scope `def`
 
-## Installation 
+## Installation
 
 there are two options
  * Include it in the Master Policy Framework (MPF)
@@ -40,7 +40,7 @@ there are two options
 
 
 ### def.node\_template\_dir
- 
+
 The  `def.node_template_dir` variable is set in `lib/surfsara/def.cf`, but can also be set
 set in `def.json`. The *def.json* wins, eg:
 ```
@@ -66,7 +66,7 @@ For older versions you have to manually add the `shorcut templates` to `controls
 ### MPF installation
 
 1. Login on your policy server.
-1. `./mpf_installation` 
+1. `./mpf_installation`
 1. Enable autorun, if you have not done it, by adding this class to your ```def.json``` file
 ```
 {
@@ -79,7 +79,7 @@ For older versions you have to manually add the `shorcut templates` to `controls
 
 You can test your installation with
  * `cf-agent -Kv | grep surfsara_autorun`
- 
+
 #### update ####
 
 You can run the same script it will detect that its an update `mpf_installation`. This script will overwrite:
@@ -122,17 +122,38 @@ used in prodduction at SURFsara.
  1. services/yum.cf
 
 To enable the template on your system:
- * MPF: copy a setup to the `masterfiles/services/autorun` directory
+ * MPF:
+  1, The prefered wat is to use `def.sara_services_enabled` method in def.cf/def.json.
+  1. Copy a setup to the `masterfiles/services/autorun` directory
  * Own Framework:
-   * copy a setup to  your masterfiles directory
-   * add the files to your `inputs` statement
-   * Activate the bundle
-     * Via the meta tags:
-        1. autorun
-        1. `template_<bundle_name>`, eg: bundle\_ntp
+   * `def_sara_services_enabled` method
      * usebundle:
         1. ntp_autorun()
         1. tcpwrappers_autorun()
+
+###  sara\_services\_enabled method
+
+This the prefered method for MPF and  your own frameork.  With this method you can contol which services are run
+and which file are included, eg: def.json
+```
+"vars": {
+    "sara_services_enabled": [
+        "ntp",
+        "resolv"
+    ]
+}
+```
+This will include the surfsara services file  `ntp.cf` and `resolv.cf` and run all bundles that have the meta tag
+`template_ntp` and `template_resolv`.  The bundle run can be protected by an class statement, default is `any`, eg:
+```
+{{{
+#!json
+"ntp": {
+    "run_class": "debian|centos"
+    }
+}}}
+
+This will only run on  debian or centos hosts.
 
 ### def.json
 
@@ -171,7 +192,7 @@ vars:
 
 
 IF you definied your own `def.cf`and do want to use the one include in this framework you can set the following class:
- * `SURFSARA_SKIP_DEF_CF_INCLUDE` 
+ * `SURFSARA_SKIP_DEF_CF_INCLUDE`
 
 
 ## cf-agent command line options
