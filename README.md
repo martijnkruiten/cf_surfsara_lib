@@ -123,13 +123,13 @@ used in prodduction at SURFsara.
 
 To enable the template on your system:
  * MPF:
-  1, The prefered wat is to use `def.sara_services_enabled` method in def.cf/def.json.
+  1. The prefered way is to use `def.sara_services_enabled` method in def.cf/def.json.
   1. Copy a setup to the `masterfiles/services/autorun` directory
  * Own Framework:
    * `def_sara_services_enabled` method
-     * usebundle:
-        1. ntp_autorun()
-        1. tcpwrappers_autorun()
+   * usebundle:
+     1. ntp_autorun()
+     1. tcpwrappers_autorun()
 
 ###  sara\_services\_enabled method
 
