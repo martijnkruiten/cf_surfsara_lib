@@ -152,6 +152,7 @@ This will include the surfsara services file  `ntp.cf` and `resolv.cf` and run a
     "run_class": "debian|centos"
     }
 }}}
+```
 
 This will only run on  debian or centos hosts.
 
