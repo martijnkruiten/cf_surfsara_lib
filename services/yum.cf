@@ -203,8 +203,14 @@ The variables are set in default.json and can be overwritten.
 The following class must be set in the specific ''def.json'' hostfile:
 {{{
 #!json
-    "classes": {
-        "YUM_BUNDLE": "any",
+    "vars": {
+        "sara_services_enabled": [
+            ...
+            "yum",
+            ...
+        ],
+        "yum": {
+        }
     },`
 }}}
 

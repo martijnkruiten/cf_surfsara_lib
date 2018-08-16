@@ -107,7 +107,7 @@ The variable must be ''singularity_json_files'' and with this setup 1 extra json
 === DEBUG ===
 
 if you want to debug this bundle set the `DEBUG_singularity` class, eg:
- * `DDEBUG_singularity,RUN`
+ * `-DDEBUG_singularity`
 
 === Setup ===
 The variables that are set in default.json and can be overwritten.
@@ -139,8 +139,14 @@ The variables that are set in default.json and can be overwritten.
 The following must be set in the specific ''def.json'' hostfile
 {{{
 #!json
-    "classes": {
-        "SINGULARITY_BUNDLE": "any",
+    "vars": {
+        "sara_services_enabled": [
+            ...
+            "singularity",
+            ...
+            ],
+            "singularity": {
+            }
     },
 }}}
 

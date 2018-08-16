@@ -1,5 +1,5 @@
 #
-## postfix.cf @SURFsara
+## sara_user_consume_resources.cf @SURFsara
 #
 bundle common sara_user_consume_resources
 {
@@ -102,7 +102,22 @@ If you want to debug this bundle set the `DEBUG_sara_user_consume_resources` cla
 
 == Def usage ==
 
-Here is an example to check also the apache binary (def.cf):
+The following must be set in the specific ''def.json'' hostfile
+{{{
+#!json
+    "vars": {
+        "sara_services_enabled": [
+            ...
+            "sara_user_consume_resources",
+            ...
+            ],
+            "sara_user_consume_resources_autorun": {
+            }
+        }
+    },
+}}}
+
+Here is an example to for a json file in  (def.cf):
 {{
 #!cf3
 vars:

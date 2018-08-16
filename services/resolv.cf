@@ -59,7 +59,7 @@ These templates are located in:
 == Usage ==
 
 The bundle is called with:
- * `"resolv" usebundle => resolv_autorun();`
+ * `"" usebundle => resolv_autorun();`
 
 Please note: to use the new setup of the bundle, please add the machine(s) to the class RESOLV_BUNDLE
 
@@ -78,7 +78,7 @@ The variable must be ""resolv_json_files"" and with this setup 1 extra json file
 === DEBUG ===
 
 if you want to debug this bundle set the `DEBUG_resolv` class, eg:
- * `DDEBUG_resolv,RUN`
+ * `DDEBUG_resolv`
 
 === Setup ===
 The variables are set in default.json and can be overwritten.
@@ -105,8 +105,13 @@ The variables are set in default.json and can be overwritten.
 The following must be set in the specific ''def.json'' hostfile
 {{{
 #!json
-    "classes": {
-        "RESOLV_BUNDLE": "any",
+    "vars": {
+        "sara_services_enabled": [
+            ...
+            "resolv",
+            ...
+            ]
+        }
     },
 }}}
 

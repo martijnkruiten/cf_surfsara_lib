@@ -5,7 +5,6 @@ bundle common dhclient
 {
     vars:
         any::
-            "bundle_dir" string => "cf_bundles_dir/dhclient";
             "template_2_destination" data => parsejson('{
                 "hooks.mustache": "$(hooks_filename)"
             }');
@@ -103,6 +102,11 @@ The following must be set in host specific host file: `def.json`
         "DHCLIENT_BUNDLE": "any",
     },
     "vars": {
+        "sara_services_enabled": [
+            ...
+            "dhclient",
+            ...
+        ],
         "dhclient": {
             "classes": {
                 "RESOLV_CONF": "any"

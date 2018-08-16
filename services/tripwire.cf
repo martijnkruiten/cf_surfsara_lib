@@ -19,15 +19,18 @@ bundle agent tripwire_autorun()
 
     methods:
         any::
-            "merge" usebundle => sara_data_autorun("tripwire");
-            "config" usebundle => tripwire_surfsara_config();
+            "" usebundle => sara_data_autorun("tripwire");
+            "" usebundle => tripwire_surfsara_config();
 }
 
 bundle agent tripwire_surfsara_config()
 {
     vars:
         any::
-            "files" slist => getvalues("sara_data.tripwire");
+            "check_data" data => mergedata("sara_data.tripwire", '{ "json_files" : {} }'),
+                comment => "Filter ou 'json_files' section";
+            #"files" slist => getvalues("sara_data.tripwire");
+            "files" slist => getvalues("check_data");
             "files_str" string =>  format("%S", "files");
 
         DEBUG_tripwire::
@@ -94,8 +97,14 @@ The variables are set in default.json and can be overwritten.
 The following must be set in the specific ''def.json'' hostfile
 {{{
 #!json
-    "classes": {
-        "TRIPWIRE_BUNDLE": "any",
+    "vars": {
+        "sara_services_enabled": [
+            ...
+            "tripwire",
+            ...
+        ],
+        "tripwire": {
+        }
     },
 }}}
 
