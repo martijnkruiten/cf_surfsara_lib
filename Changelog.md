@@ -5,8 +5,8 @@
   * Use standard cfengine `remote_dcp` bundle instead of `sara_hash_no_perms_cp`
   * Force local copy of mustache/json file(s) with `-DTEMPLATE_LOCAL_COPY`, `-DMUSTACHE_LOCAL_COPY` or `-DJSON_LOCAL_COPY`
   * Report if we can not copy the specified json file(s) for a  bundle.
-  * Can now set bundle classes based on an cfengine expression in the bundle json data, ala def.json, eg
-```
+  * Can now set bundle classes based on an cfengine expression in the bundle json data, ala def.json, This will set the class `DHCLIENT_RESOLV_CONF` on host `r24n2`:
+ ```
 "dhclient": {
   "classes": {
      "RESOLV_CONF": "r24n2"
