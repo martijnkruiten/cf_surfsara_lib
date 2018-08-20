@@ -188,6 +188,10 @@ the templates are located in:
  * templates/ssh/
  * templates/ssh/json
 
+The following clases can be set via def.cf/json:
+ *  use_depricated_options:  These options are not used anymore , default true  on centos and debian_7
+ *  keygen: Must we generate host keys, command line options can bet set via json
+
 == Usage ==
 
 This is called with:
@@ -232,6 +236,7 @@ The variables are set in default.json and can be overwritten.
     "IgnoreRhosts": "yes",
     "IgnoreUserKnownHosts": "no",
     "KeyRegenerationInterval": "3600",
+    "keygen_opt": "-A",
     "ListenAddress": [
         { "address": "::" },
         { "address": "0.0.0.0" }
@@ -355,6 +360,9 @@ vars:
 {{{
 #!json
         "ssh" : {
+            "classes": {
+                "keygen": [ "any" ]
+            },
             "MaxAuthTries": "6",
             "X11Forwarding": "no",
         },

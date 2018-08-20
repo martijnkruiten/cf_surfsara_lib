@@ -56,7 +56,7 @@ If `autorun` is enabled in the MPF framework. You can control which service file
 }
 ```
 
-This will include the service files `services/surfsara/ssh.cf` and `services/surfsara/ntp`
+This will include the service files `services/surfsara/ssh.cf` and `services/surfsara/ntp.cf`
 and run/configure the ssh/ntp services with the aid of mustache/json data. The bundle run can
 be protected by a class statement (def.json)  default is `any`, eg:
 ```
@@ -120,6 +120,12 @@ classes:
     "X11Forwarding": "yes",
     "X11UseLocalhost": "yes
 ```
+
+    * Added a new  option generate  host keys controlled via the class `SSH_KEYGEN` default not set, aen default option:
+```
+    "keygen_opt": "-A"
+```
+
 ## postfix changes
 
  * Added functionallity to enable `virtual_alias_maps` entry in postfix main.cf. The following example will copy the mustache template file from `templates/postfix/ldap_aliases_map.mustache` and expand it with the specified inline json data:
