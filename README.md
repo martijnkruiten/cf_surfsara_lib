@@ -112,14 +112,17 @@ See above to add `templates shortcut` to cf-serverd.
 There are several template setups for different services included with inline documentation. These setups are
 used in prodduction at SURFsara.
  1. services/check_space.cf
+ 1. services/cron.cf
  1. services/dhclient.cf
  1. services/ntp.cf
+ 1. services/pam.cf
  1. services/postfix.cf
  1. services/resolv.cf
  1. services/tcpwrappers.cf
  1. services/sara_user_consume_resources.cf
  1. services/singularity.cf
  1. services/ssh.cf
+ 1. services/systemd.cf
  1. services/tripwire.cf
  1. services/yum.cf
 

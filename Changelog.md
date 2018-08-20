@@ -1,4 +1,5 @@
-#  Version: 0.9 (2018-06-
+#  Version: 0.9.0 (2018-08-24)
+  * New services added: systend, pam and cron.
   * Added installation script for MPF: `mpf_installation`, cfengine version tested: 3.10,3.11 and 3.12
   * Added SURFsara autorun services setup, controlled via `def.sara_services_enabled`
   * Skip mustache expand if not a valid destination
