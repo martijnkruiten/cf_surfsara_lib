@@ -17,7 +17,7 @@ You can control which services must be run by specifying the following variable 
 }}}
 
 This variable will include the cfengine services file from the directory
-`def.sara_services_dir` (default value: services) and run all bundles that have
+`def.sara_services_dir` (default value: surfsara/services) and run all bundles that have
 the meta tag, eg: `template_ssh`. The bundle run can be protected by an class
 statement, default is `any`, eg:
 {{{

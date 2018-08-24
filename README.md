@@ -114,10 +114,14 @@ used in prodduction at SURFsara.
  1. services/check_space.cf
  1. services/cron.cf
  1. services/dhclient.cf
+ 1. services/node_exporter.cf
+ 1. services/nscd.cf
  1. services/ntp.cf
  1. services/pam.cf
+ 1. services/pam_radius.cf
  1. services/postfix.cf
  1. services/resolv.cf
+ 1. services/sudo.cf
  1. services/tcpwrappers.cf
  1. services/sara_user_consume_resources.cf
  1. services/singularity.cf

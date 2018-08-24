@@ -37,50 +37,6 @@ bundle agent cron_autorun()
                 ifvarclass => "DEBUG|DEBUG_cron|DEBUG_$(this.bundle)";
 
 }
-
-###
-# Install a cronjob in a Vixie cron environment
-#
-bundle agent cron_job(name, data)
-{
-    vars:
-        any::
-            "cron_dir" string => "/etc/cron.d";
-            "header" string => "## Maintained by CFengine$(const.n)#$(const.n)";
-
-            "template" string => "$(header){{{minute}}} {{{hour}}} {{{day_of_month}}} {{{month}}} {{{day_of_week}}} {{{user}}} {{{command}}}";
-
-            "job_str" string => string_mustache( "$(template)", "@(data)");
-
-    classes:
-        any::
-            "CRON_VIXIE" expression => isdir("$(cron_dir)");
-
-    files:
-@if minimum_version(3.12)
-            CRON_VIXIE::
-                "$(cron_dir)/$(name)"
-                     comment => "Vixie cron: one command per file",
-                     create => "true",
-                     edit_template_string   => "$(template)$(const.n)",
-                     template_method => "inline_mustache",
-                     template_data => "@(data)",
-                     classes => results("namespace", "cron_job_$(name)");
-@endif
-
-    methods:
-            CRON_VIXIE.(cfengine_3_10|cfengine_3_7)::
-                "" usebundle => file_make("$(cron_dir)/$(name)", "$(job_str)"),
-                    classes => results("namespace", "cron_job_$(name)");
-
-    reports:
-            any::
-                "'$(name)' is installed in $(cron_dir): $(const.n)$(job_str)"
-                    ifvarclass => "DEBUG|DEBUG_cron|DEBUG_$(this.bundle)";
-
-            !CRON_VIXIE::
-                "No Vixie cron software installed";
-}
 @if minimum_version(99.9)
 
 = cron =
@@ -98,45 +54,10 @@ These templates are located in:
  * templates/cron
  * templates/cron/json
 
-In this bundle there is also separte bundle that can be called to install system cronjobs in `/etc/cron.d`, This
-bunnle is called:
- * cron_job(name, data)
-
-Where:
- * name: is the name of the cronjob file
- * data: Json data. eg: 2 minute cronjob
-{{{
-#!json
-{
-    "minute": "*/2",
-    "hour": "*",
-    "day_of_month": "*",
-    "month": "*",
-    "day_of_week": "*",
-    "user": "root",
-    "command": "/bin/ls"
-}
-
 == Usage ==
 
 The bundle is called with:
  * `"" usebundle => cron_autorun();`
-
-You can also create a cron job entry in `/etc/cron.d`, eg:
- * `"" use bundle => cron_job("check_cfexecd", @(d));`
-{{{
-#!cf3
-vars:
-   "d" data => parsejson('{
-        "minute": "*/4",
-        "hour": "*",
-        "day_of_month": "*",
-        "month": "*",
-        "day_of_week": "*",
-        "user": "root",
-        "command": "sh $(sys.inputdir)/check_cfexecd.sh  || $(sys.bindir)/cf-agent -B `cat $(def.node_status_dir)/policy_server.dat`",
-        }');
-}}}
 
 When we do not specifiy any json data files then only `default.json` will be
 read. You can specify extra json data file via:

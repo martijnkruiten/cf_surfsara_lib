@@ -485,6 +485,18 @@ bundle agent sara_mustache_cf_data_2_file(bundle_name, template_file, destinatio
                 ifvarclass => "DEBUG_$(bundle_name)|DEBUG|DEBUG_MUSTACHE";
 }
 
+bundle agent sara_show_data(bundle_name, var)
+{
+    ## https://tracker.mender.io/browse/CFE-2434 bug in passing data containers with vars
+    reports:
+        any::
+@if minimum_version(3.11)
+            "$(this.bundle): $(bundle_name).$(var)
+                $(with)"
+                comment => "Display the bundle variable data",
+                with => string_mustache("{{$-top-}}", data_expand("$(bundle_name).$(var)"));
+@endif
+}
 
 bundle agent sara_template_autorun(bundle_name)
 {

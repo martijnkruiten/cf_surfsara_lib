@@ -1,5 +1,5 @@
 #  Version: 0.9.0 (2018-08-24)
-  * New services added: systend, pam and cron.
+  * New services added: cron, pam, pam\_radius, nscd, node\_exporter, sudo and systemd.
   * Added installation script for MPF: `mpf_installation`, cfengine version tested: 3.10,3.11 and 3.12
   * Added SURFsara autorun services setup, controlled via `def.sara_services_enabled`
   * Skip mustache expand if not a valid destination
@@ -16,6 +16,7 @@
 ```
   * Service packages defined in the bundle can now be overridden by 'def.json'. The values can be `install/remove/purge`.
   * Implemented `copy_files` json for services, see `ssh` changes. bundle name: `sara_service_copy_files`
+  * Implemented `copy_dirs` json for services, see `node_exporter` bundle name: `sara_service_copy_dirs`
 
 ## service packages override options
 
@@ -84,24 +85,57 @@ methods:
     "" usebundle => sara_services_autorun();
 ```
 
+## node\_exporter
+
+This is  a new bundle "Prometheus exporter for hardware and OS metrics exposed by *NIX kernels". The bundle
+make use of a new feature `sara_service_copy-dirs`, eg:
+```
+    "copy_dirs": [
+        {
+            "dest": "$(sara_data.node_exporter[dir])",
+            "exclude_dirs": [ ".git", ".svn" ],
+            "purge": "true",
+            "run_bundle": "node_exporter_restart",
+            "source": "cf_bundles_dir/prometheus_exporters/node_exporter-0.15.2"
+        }
+    ],
+```
+
+This will copy the directory and make sure that the destination is  exac the same as the source.
+the default option for `copy_dirs` are:
+```
+bundle agent sara_cp_dir_default
+{
+    vars:
+       any::
+            "attributes" data => parsejson('{
+                "compare": "digest",
+                "preserve": "true",
+                "purge": "false",
+                "sync": "false",
+                "type_check": "false"
+                }');
+}
+```
+
 ## ssh changes
    * Use the `sara_service_copy_files` bundle
 ```
  "ssh": {
-    "copy_files": {
+    "copy_files": [
         {
             "dest": "$(ssh.config_dir)/ssh_host_dsa_key",
             "src": "cf_bundles_dir/ssh/doornode/ssh_host_dsa_key",
             "mode": "0600", "owner": "root", "group": "root",
-            "run_bundle": "ssh_daemon_restart" }
-        ,
+            "run_bundle": "ssh_daemon_restart"
+        },
         {
             "dest": "$(ssh.config_dir)/ssh_host_dsa_key.pub",
             "src": "cf_bundles_dir/ssh/doornode/ssh_host_dsa_key.pub",
             "mode": "0644", "owner": "root", "group": "root",
             "run_bundle": "ssh_daemon_restart"
         }
-    }
+    ]
 },
 ```
 
