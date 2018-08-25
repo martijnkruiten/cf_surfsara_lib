@@ -142,7 +142,7 @@ To enable the template on your system:
 
 ###  sara\_services\_enabled method
 
-This the prefered method for MPF and  your own frameork.  With this method you can contol which services are run
+This is the prefered method for MPF and  your own frameork.  With this method you can contol which services are run
 and which file are included, eg: def.json
 ```
 "vars": {
@@ -155,12 +155,9 @@ and which file are included, eg: def.json
 This will include the surfsara services file  `ntp.cf` and `resolv.cf` and run all bundles that have the meta tag
 `template_ntp` and `template_resolv`.  The bundle run can be protected by an class statement, default is `any`, eg:
 ```
-{{{
-#!json
 "ntp": {
     "run_class": "debian|centos"
     }
-}}}
 ```
 
 This will only run on  debian or centos hosts.
@@ -179,7 +176,7 @@ In this file you can override settings for the templates. When the json data is 
 You can also specify json setup files:
 ```
 "vars": {
-    "tcpwrapper": {
+    "tcpwrappers": {
         "json_files": [ "allow_ssh.json", "allow_http.json" ]
     }
 }
@@ -197,11 +194,11 @@ vars:
  * json file:
 ```
 vars:
-    "tcpwrapper" data => parsejson( '{ "json_files": [ "allow_ssh.json", "allow_http.json" ] '} );
+    "tcpwrappers" data => parsejson( '{ "json_files": [ "allow_ssh.json", "allow_http.json" ] '} );
 ```
 
 
-If you defined your own `def.cf`and do want to use the one include in this framework you can set the following class:
+If you defined your own `def.cf` and do not want the one included in this framework you can set the following class:
  * `SURFSARA_SKIP_DEF_CF_INCLUDE`
 
 
