@@ -182,6 +182,20 @@ You can also specify json setup files:
 }
 ```
 
+#### Bundle classes
+
+For every service you dynamically set classes in the bundle data, eg:
+```
+"vars": {
+    "dhclient": {
+       "classes": {
+           "RESOLV_CONF": [ "r24n2" ]
+       }
+    }
+}
+```
+This will set the class `DHCLIENT_RESOLV_CONF` on host/node `r24n2`
+
 ### lib/surfsara/def.cf
 
 
