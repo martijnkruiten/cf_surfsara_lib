@@ -13,7 +13,7 @@ For all bundles the mustache/json file(s) will be copied to the local node direc
     * `$(def.node_template_dir)/$(bundle_name)`
     * The generated file(s) are specified in def.cf/json: `$(bundle_name)[local_generated_json_files]`
  * You can override values via *def.json*, Note: This one always wins.
- * CFengine variables are expanded.
+ * CFEngine variables are expanded.
 
 Both senarios will be described in the subsection below. For both senarios you can specifiy multiple
 json files. The files will be merged and the last one wins if the same variable name is used,eg:
@@ -110,23 +110,25 @@ See above to add `templates shortcut` to cf-serverd.
 ## Usage
 
 There are several template setups for different services included with inline documentation. These setups are
-used in prodduction at SURFsara.
+used in production at SURFsara.
  1. services/check_space.cf
  1. services/cron.cf
  1. services/dhclient.cf
  1. services/node_exporter.cf
  1. services/nscd.cf
  1. services/ntp.cf
+ 1. services/nvidia_gpu_prometheus_exporter.cf
  1. services/pam.cf
  1. services/pam_radius.cf
  1. services/postfix.cf
  1. services/resolv.cf
  1. services/sudo.cf
- 1. services/tcpwrappers.cf
  1. services/sara_user_consume_resources.cf
  1. services/singularity.cf
+ 1. services/slurm_prometheus_exporter.cf
  1. services/ssh.cf
  1. services/systemd.cf
+ 1. services/tcpwrappers.cf
  1. services/tripwire.cf
  1. services/yum.cf
 
@@ -142,7 +144,7 @@ To enable the template on your system:
 
 ###  sara\_services\_enabled method
 
-This is the prefered method for MPF and  your own frameork.  With this method you can contol which services are run
+This is the prefered method for MPF and your own frameork. With this method you can contol which services are run
 and which file are included, eg: def.json
 ```
 "vars": {
@@ -152,8 +154,8 @@ and which file are included, eg: def.json
     ]
 }
 ```
-This will include the surfsara services file  `ntp.cf` and `resolv.cf` and run all bundles that have the meta tag
-`template_ntp` and `template_resolv`.  The bundle run can be protected by an class statement, default is `any`, eg:
+This will include the surfsara services file `ntp.cf` and `resolv.cf` and run all bundles that have the meta tag
+`template_ntp` and `template_resolv`. The bundle run can be protected by an class statement, default is `any`, eg:
 ```
 "ntp": {
     "run_class": "debian|centos"
