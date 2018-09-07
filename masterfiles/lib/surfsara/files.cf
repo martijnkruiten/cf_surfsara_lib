@@ -6,6 +6,7 @@
 body copy_from sara_cp_dir(bundle_name, var, server)
 {
     servers     => { "$(server)" };
+    compare     => "$($(bundle_name).$(var)[compare])";
     source      => "$($(bundle_name).$(var)[source])";
     purge       => "$($(bundle_name).$(var)[purge])";
     preserve    => "$($(bundle_name).$(var)[preserve])";
